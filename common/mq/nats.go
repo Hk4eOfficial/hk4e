@@ -33,13 +33,12 @@ type MessageQueue struct {
 	cmdProtoMap            *cmd.CmdProtoMap
 	serverType             string
 	appId                  string
-	gateTcpMqChan          chan []byte
 	gateTcpMqEventChan     chan *GateTcpMqEvent
 	gateTcpMqDeadEventChan chan string
-	rpcClient              *rpc.Client
+	discoveryClient        *rpc.DiscoveryClient
 }
 
-func NewMessageQueue(serverType string, appId string, rpcClient *rpc.Client) (r *MessageQueue) {
+func NewMessageQueue(serverType string, appId string, discoveryClient *rpc.DiscoveryClient) (r *MessageQueue) {
 	r = new(MessageQueue)
 	conn, err := nats.Connect(config.GetConfig().MQ.NatsUrl)
 	if err != nil {
@@ -63,16 +62,15 @@ func NewMessageQueue(serverType string, appId string, rpcClient *rpc.Client) (r 
 	r.cmdProtoMap = cmd.NewCmdProtoMap()
 	r.serverType = serverType
 	r.appId = appId
-	r.gateTcpMqChan = make(chan []byte, 1000)
 	r.gateTcpMqEventChan = make(chan *GateTcpMqEvent, 1000)
 	r.gateTcpMqDeadEventChan = make(chan string, 1000)
-	r.rpcClient = rpcClient
+	r.discoveryClient = discoveryClient
 	if serverType == api.GATE {
 		go r.runGateTcpMqServer()
-	} else {
+	} else if serverType == api.GS || serverType == api.MULTI || serverType == api.ROBOT {
 		go r.runGateTcpMqClient()
 	}
-	go r.recvHandler()
+	go r.natsMsgRecvHandler()
 	go r.sendHandler()
 	return r
 }
@@ -81,6 +79,7 @@ func (m *MessageQueue) Close() {
 	// 等待所有待发送的消息发送完毕
 	for {
 		if len(m.netMsgInput) == 0 {
+			time.Sleep(time.Millisecond * 100)
 			break
 		}
 		time.Sleep(time.Millisecond * 100)
@@ -92,91 +91,102 @@ func (m *MessageQueue) GetNetMsg() chan *NetMsg {
 	return m.netMsgOutput
 }
 
-func (m *MessageQueue) recvHandler() {
+func (m *MessageQueue) natsMsgRecvHandler() {
 	for {
-		var rawData []byte = nil
-		select {
-		case natsMsg := <-m.natsMsgChan:
-			rawData = natsMsg.Data
-		case gateTcpMqMsg := <-m.gateTcpMqChan:
-			rawData = gateTcpMqMsg
-		}
-		// msgpack NetMsg
-		netMsg := new(NetMsg)
-		err := msgpack.Unmarshal(rawData, netMsg)
-		if err != nil {
-			logger.Error("parse bin to net msg error: %v", err)
+		natsMsg := <-m.natsMsgChan
+		rawData := natsMsg.Data
+		netMsg := m.parseNetMsg(rawData)
+		if netMsg == nil {
 			continue
 		}
 		// 忽略自己发出的广播消息
 		if netMsg.OriginServerType == m.serverType && netMsg.OriginServerAppId == m.appId {
 			continue
 		}
-		switch netMsg.MsgType {
-		case MsgTypeGame:
-			gameMsg := netMsg.GameMsg
-			if gameMsg == nil {
-				logger.Error("recv game msg is nil")
-				continue
-			}
-			if netMsg.EventId == NormalMsg {
-				// protobuf PayloadMessage
-				payloadMessage := m.cmdProtoMap.GetProtoObjByCmdId(gameMsg.CmdId)
-				if payloadMessage == nil {
-					logger.Error("get protobuf obj by cmd id error: %v", err)
-					continue
-				}
-				err = pb.Unmarshal(gameMsg.PayloadMessageData, payloadMessage)
-				if err != nil {
-					logger.Error("parse bin to payload msg error: %v", err)
-					continue
-				}
-				gameMsg.PayloadMessage = payloadMessage
-			}
-		}
 		m.netMsgOutput <- netMsg
 	}
+}
+
+func (m *MessageQueue) buildNetMsg(netMsg *NetMsg) []byte {
+	switch netMsg.MsgType {
+	case MsgTypeGame:
+		gameMsg := netMsg.GameMsg
+		if gameMsg == nil {
+			logger.Error("send game msg is nil")
+			return nil
+		}
+		if gameMsg.PayloadMessageData == nil {
+			// protobuf PayloadMessage
+			payloadMessageData, err := pb.Marshal(gameMsg.PayloadMessage)
+			if err != nil {
+				logger.Error("parse payload msg to bin error: %v", err)
+				return nil
+			}
+			gameMsg.PayloadMessageData = payloadMessageData
+		}
+	}
+	// msgpack NetMsg
+	rawData, err := msgpack.Marshal(netMsg)
+	if err != nil {
+		logger.Error("parse net msg to bin error: %v", err)
+		return nil
+	}
+	return rawData
+}
+
+func (m *MessageQueue) parseNetMsg(rawData []byte) *NetMsg {
+	// msgpack NetMsg
+	netMsg := new(NetMsg)
+	err := msgpack.Unmarshal(rawData, netMsg)
+	if err != nil {
+		logger.Error("parse bin to net msg error: %v", err)
+		return nil
+	}
+	switch netMsg.MsgType {
+	case MsgTypeGame:
+		gameMsg := netMsg.GameMsg
+		if gameMsg == nil {
+			logger.Error("recv game msg is nil")
+			return nil
+		}
+		if netMsg.EventId == NormalMsg {
+			// protobuf PayloadMessage
+			payloadMessage := m.cmdProtoMap.GetProtoObjFastNewByCmdId(gameMsg.CmdId)
+			if payloadMessage == nil {
+				logger.Error("get protobuf obj by cmd id error: %v", err)
+				return nil
+			}
+			err = pb.Unmarshal(gameMsg.PayloadMessageData, payloadMessage)
+			if err != nil {
+				logger.Error("parse bin to payload msg error: %v", err)
+				return nil
+			}
+			gameMsg.PayloadMessage = payloadMessage
+		}
+	}
+	return netMsg
 }
 
 func (m *MessageQueue) sendHandler() {
 	// 网关tcp连接消息收发快速通道 key1:服务器类型 key2:服务器appid value:连接实例
 	gateTcpMqInstMap := map[string]map[string]*GateTcpMqInst{
-		api.GATE:        make(map[string]*GateTcpMqInst),
-		api.GS:          make(map[string]*GateTcpMqInst),
-		api.FIGHT:       make(map[string]*GateTcpMqInst),
-		api.PATHFINDING: make(map[string]*GateTcpMqInst),
+		api.GATE:  make(map[string]*GateTcpMqInst),
+		api.GS:    make(map[string]*GateTcpMqInst),
+		api.MULTI: make(map[string]*GateTcpMqInst),
+		api.ROBOT: make(map[string]*GateTcpMqInst),
 	}
 	for {
 		select {
 		case netMsg := <-m.netMsgInput:
-			switch netMsg.MsgType {
-			case MsgTypeGame:
-				gameMsg := netMsg.GameMsg
-				if gameMsg == nil {
-					logger.Error("send game msg is nil")
-					continue
-				}
-				if gameMsg.PayloadMessageData == nil {
-					// protobuf PayloadMessage
-					payloadMessageData, err := pb.Marshal(gameMsg.PayloadMessage)
-					if err != nil {
-						logger.Error("parse payload msg to bin error: %v", err)
-						continue
-					}
-					gameMsg.PayloadMessageData = payloadMessageData
-				}
-			}
-			// msgpack NetMsg
-			netMsgData, err := msgpack.Marshal(netMsg)
-			if err != nil {
-				logger.Error("parse net msg to bin error: %v", err)
+			rawData := m.buildNetMsg(netMsg)
+			if rawData == nil {
 				continue
 			}
 			fallbackNatsMqSend := func() {
 				// 找不到tcp快速通道就fallback回nats
 				natsMsg := nats.NewMsg(netMsg.Topic)
-				natsMsg.Data = netMsgData
-				err = m.natsConn.PublishMsg(natsMsg)
+				natsMsg.Data = rawData
+				err := m.natsConn.PublishMsg(natsMsg)
 				if err != nil {
 					logger.Error("nats publish msg error: %v", err)
 					return
@@ -199,20 +209,35 @@ func (m *MessageQueue) sendHandler() {
 				fallbackNatsMqSend()
 				continue
 			}
-			// 前4个字节为消息的载荷部分长度
-			netMsgDataTcp := make([]byte, 4+len(netMsgData))
-			binary.BigEndian.PutUint32(netMsgDataTcp, uint32(len(netMsgData)))
-			copy(netMsgDataTcp[4:], netMsgData)
-			_, err = inst.conn.Write(netMsgDataTcp)
-			if err != nil {
-				// 发送失败关闭连接fallback回nats
-				logger.Error("gate tcp mq send error: %v", err)
-				_ = inst.conn.Close()
-				m.gateTcpMqEventChan <- &GateTcpMqEvent{
-					event: EventDisconnect,
-					inst:  inst,
+			gateTcpMqSend := func(data []byte) bool {
+				err := inst.conn.SetWriteDeadline(time.Now().Add(time.Second))
+				if err != nil {
+					fallbackNatsMqSend()
+					return false
 				}
-				fallbackNatsMqSend()
+				_, err = inst.conn.Write(data)
+				if err != nil {
+					// 发送失败关闭连接fallback回nats
+					logger.Error("gate tcp mq send error: %v", err)
+					_ = inst.conn.Close()
+					m.gateTcpMqEventChan <- &GateTcpMqEvent{
+						event: EventDisconnect,
+						inst:  inst,
+					}
+					fallbackNatsMqSend()
+					return false
+				}
+				return true
+			}
+			// 前4个字节为消息的载荷部分长度
+			headLenData := make([]byte, 4)
+			binary.BigEndian.PutUint32(headLenData, uint32(len(rawData)))
+			ok := gateTcpMqSend(headLenData)
+			if !ok {
+				continue
+			}
+			ok = gateTcpMqSend(rawData)
+			if !ok {
 				continue
 			}
 		case gateTcpMqEvent := <-m.gateTcpMqEventChan:
@@ -231,7 +256,7 @@ func (m *MessageQueue) sendHandler() {
 }
 
 type GateTcpMqInst struct {
-	conn       net.Conn
+	conn       *net.TCPConn
 	serverType string
 	appId      string
 }
@@ -258,17 +283,18 @@ func (m *MessageQueue) runGateTcpMqServer() {
 		return
 	}
 	for {
-		conn, err := listener.Accept()
+		conn, err := listener.AcceptTCP()
 		if err != nil {
 			logger.Error("gate tcp mq accept error: %v", err)
 			return
 		}
+		_ = conn.SetNoDelay(true)
 		logger.Info("accept gate tcp mq, server addr: %v", conn.RemoteAddr().String())
 		go m.gateTcpMqHandshake(conn)
 	}
 }
 
-func (m *MessageQueue) gateTcpMqHandshake(conn net.Conn) {
+func (m *MessageQueue) gateTcpMqHandshake(conn *net.TCPConn) {
 	recvBuf := make([]byte, 1500)
 	recvLen, err := conn.Read(recvBuf)
 	if err != nil {
@@ -293,10 +319,10 @@ func (m *MessageQueue) gateTcpMqHandshake(conn net.Conn) {
 		inst.serverType = api.GATE
 	case api.GS:
 		inst.serverType = api.GS
-	case api.FIGHT:
-		inst.serverType = api.FIGHT
-	case api.PATHFINDING:
-		inst.serverType = api.PATHFINDING
+	case api.MULTI:
+		inst.serverType = api.MULTI
+	case api.ROBOT:
+		inst.serverType = api.ROBOT
 	default:
 		logger.Error("invalid server type")
 		return
@@ -331,7 +357,7 @@ func (m *MessageQueue) runGateTcpMqClient() {
 }
 
 func (m *MessageQueue) gateTcpMqConn(gateServerConnAddrMap map[string]bool) {
-	rsp, err := m.rpcClient.Discovery.GetAllGateServerInfoList(context.TODO(), new(api.NullMsg))
+	rsp, err := m.discoveryClient.GetAllGateServerInfoList(context.TODO(), new(api.NullMsg))
 	if err != nil {
 		logger.Error("gate tcp mq get gate list error: %v", err)
 		return
@@ -354,6 +380,7 @@ func (m *MessageQueue) gateTcpMqConn(gateServerConnAddrMap map[string]bool) {
 			logger.Error("gate tcp mq conn error: %v", err)
 			return
 		}
+		_ = conn.SetNoDelay(true)
 		_, err = conn.Write([]byte(m.serverType + "@" + m.appId))
 		if err != nil {
 			logger.Error("gate tcp mq handshake send error: %v", err)
@@ -375,51 +402,46 @@ func (m *MessageQueue) gateTcpMqConn(gateServerConnAddrMap map[string]bool) {
 }
 
 func (m *MessageQueue) gateTcpMqRecvHandle(inst *GateTcpMqInst) {
-	dataBuf := make([]byte, 0, 1500)
+	header := make([]byte, 4)
+	payload := make([]byte, 1024)
 	for {
-		recvBuf := make([]byte, 1500)
-		recvLen, err := inst.conn.Read(recvBuf)
-		if err != nil {
-			logger.Error("gate tcp mq recv error: %v", err)
-			m.gateTcpMqEventChan <- &GateTcpMqEvent{
-				event: EventDisconnect,
-				inst:  inst,
+		// 读取头部的消息长度
+		recvLen := 0
+		for recvLen < 4 {
+			n, err := inst.conn.Read(header[recvLen:])
+			if err != nil {
+				logger.Error("gate tcp mq recv error: %v", err)
+				m.gateTcpMqEventChan <- &GateTcpMqEvent{
+					event: EventDisconnect,
+					inst:  inst,
+				}
+				_ = inst.conn.Close()
+				return
 			}
-			_ = inst.conn.Close()
-			return
+			recvLen += n
 		}
-		recvBuf = recvBuf[:recvLen]
-		m.gateTcpMqRecvHandleLoop(recvBuf, &dataBuf)
-	}
-}
-
-func (m *MessageQueue) gateTcpMqRecvHandleLoop(data []byte, dataBuf *[]byte) {
-	if len(*dataBuf) != 0 {
-		// 取出之前的缓冲区数据
-		data = append(*dataBuf, data...)
-		*dataBuf = make([]byte, 0, 1500)
-	}
-	// 长度太短
-	if len(data) < 4 {
-		logger.Debug("packet len less 4 byte, data: %v", data)
-		*dataBuf = append(*dataBuf, data...)
-		return
-	}
-	// 消息的载荷部分长度
-	msgPayloadLen := binary.BigEndian.Uint32(data[0:4])
-	// 检查长度
-	packetLen := int(msgPayloadLen) + 4
-	haveMorePacket := false
-	if len(data) > packetLen {
-		// 有不止一个包
-		haveMorePacket = true
-	} else if len(data) < packetLen {
-		// 这一次没收够 放入缓冲区
-		*dataBuf = append(*dataBuf, data...)
-		return
-	}
-	m.gateTcpMqChan <- data[4 : 4+msgPayloadLen]
-	if haveMorePacket {
-		m.gateTcpMqRecvHandleLoop(data[packetLen:], dataBuf)
+		msgLen := binary.BigEndian.Uint32(header)
+		// 读取消息体
+		if len(payload) < int(msgLen) {
+			payload = make([]byte, msgLen)
+		}
+		recvLen = 0
+		for recvLen < int(msgLen) {
+			n, err := inst.conn.Read(payload[recvLen:msgLen])
+			if err != nil {
+				logger.Error("gate tcp mq recv error: %v", err)
+				m.gateTcpMqEventChan <- &GateTcpMqEvent{
+					event: EventDisconnect,
+					inst:  inst,
+				}
+				_ = inst.conn.Close()
+				return
+			}
+			recvLen += n
+		}
+		netMsg := m.parseNetMsg(payload[:msgLen])
+		if netMsg != nil {
+			m.netMsgOutput <- netMsg
+		}
 	}
 }

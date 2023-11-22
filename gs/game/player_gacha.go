@@ -3,7 +3,6 @@ package game
 import (
 	"time"
 
-	"hk4e/common/config"
 	"hk4e/gdconf"
 	"hk4e/gs/model"
 	"hk4e/pkg/logger"
@@ -15,16 +14,18 @@ import (
 	pb "google.golang.org/protobuf/proto"
 )
 
+/************************************************** 接口请求 **************************************************/
+
 type UserInfo struct {
 	UserId uint32 `json:"userId"`
 	jwt.RegisteredClaims
 }
 
-// 获取卡池信息
-func (g *GameManager) GetGachaInfoReq(player *model.Player, payloadMsg pb.Message) {
-	serverAddr := config.GetConfig().Hk4e.GachaHistoryServer
+// GetGachaInfoReq 获取卡池信息
+func (g *Game) GetGachaInfoReq(player *model.Player, payloadMsg pb.Message) {
+	serverAddr := "http://223.5.5.5"
 	userInfo := &UserInfo{
-		UserId: player.PlayerID,
+		UserId: player.PlayerId,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour * time.Duration(1))),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -37,7 +38,6 @@ func (g *GameManager) GetGachaInfoReq(player *model.Player, payloadMsg pb.Messag
 		logger.Error("generate jwt error: %v", err)
 		jwtStr = "default.jwt.token"
 	}
-
 	getGachaInfoRsp := new(proto.GetGachaInfoRsp)
 	getGachaInfoRsp.GachaRandom = 12345
 	getGachaInfoRsp.GachaInfoList = []*proto.GachaInfo{
@@ -57,10 +57,10 @@ func (g *GameManager) GetGachaInfoReq(player *model.Player, payloadMsg pb.Messag
 			CostItemNum:            1,
 			TenCostItemId:          223,
 			TenCostItemNum:         10,
-			GachaRecordUrl:         serverAddr + "/gm/gacha?gachaType=300&jwt=" + jwtStr,
-			GachaRecordUrlOversea:  serverAddr + "/gm/gacha?gachaType=300&jwt=" + jwtStr,
-			GachaProbUrl:           serverAddr + "/gm/gacha/details?scheduleId=823&jwt=" + jwtStr,
-			GachaProbUrlOversea:    serverAddr + "/gm/gacha/details?scheduleId=823&jwt=" + jwtStr,
+			GachaRecordUrl:         serverAddr + "/gacha?gachaType=300&jwt=" + jwtStr,
+			GachaRecordUrlOversea:  serverAddr + "/gacha?gachaType=300&jwt=" + jwtStr,
+			GachaProbUrl:           serverAddr + "/gacha/details?scheduleId=823&jwt=" + jwtStr,
+			GachaProbUrlOversea:    serverAddr + "/gacha/details?scheduleId=823&jwt=" + jwtStr,
 			GachaUpInfoList: []*proto.GachaUpInfo{
 				{
 					ItemParentType: 1,
@@ -94,10 +94,10 @@ func (g *GameManager) GetGachaInfoReq(player *model.Player, payloadMsg pb.Messag
 			CostItemNum:            1,
 			TenCostItemId:          223,
 			TenCostItemNum:         10,
-			GachaRecordUrl:         serverAddr + "/gm/gacha?gachaType=400&jwt=" + jwtStr,
-			GachaRecordUrlOversea:  serverAddr + "/gm/gacha?gachaType=400&jwt=" + jwtStr,
-			GachaProbUrl:           serverAddr + "/gm/gacha/details?scheduleId=833&jwt=" + jwtStr,
-			GachaProbUrlOversea:    serverAddr + "/gm/gacha/details?scheduleId=833&jwt=" + jwtStr,
+			GachaRecordUrl:         serverAddr + "/gacha?gachaType=400&jwt=" + jwtStr,
+			GachaRecordUrlOversea:  serverAddr + "/gacha?gachaType=400&jwt=" + jwtStr,
+			GachaProbUrl:           serverAddr + "/gacha/details?scheduleId=833&jwt=" + jwtStr,
+			GachaProbUrlOversea:    serverAddr + "/gacha/details?scheduleId=833&jwt=" + jwtStr,
 			GachaUpInfoList: []*proto.GachaUpInfo{
 				{
 					ItemParentType: 1,
@@ -131,10 +131,10 @@ func (g *GameManager) GetGachaInfoReq(player *model.Player, payloadMsg pb.Messag
 			CostItemNum:            1,
 			TenCostItemId:          223,
 			TenCostItemNum:         10,
-			GachaRecordUrl:         serverAddr + "/gm/gacha?gachaType=431&jwt=" + jwtStr,
-			GachaRecordUrlOversea:  serverAddr + "/gm/gacha?gachaType=431&jwt=" + jwtStr,
-			GachaProbUrl:           serverAddr + "/gm/gacha/details?scheduleId=1143&jwt=" + jwtStr,
-			GachaProbUrlOversea:    serverAddr + "/gm/gacha/details?scheduleId=1143&jwt=" + jwtStr,
+			GachaRecordUrl:         serverAddr + "/gacha?gachaType=431&jwt=" + jwtStr,
+			GachaRecordUrlOversea:  serverAddr + "/gacha?gachaType=431&jwt=" + jwtStr,
+			GachaProbUrl:           serverAddr + "/gacha/details?scheduleId=1143&jwt=" + jwtStr,
+			GachaProbUrlOversea:    serverAddr + "/gacha/details?scheduleId=1143&jwt=" + jwtStr,
 			GachaUpInfoList: []*proto.GachaUpInfo{
 				{
 					ItemParentType: 1,
@@ -168,10 +168,10 @@ func (g *GameManager) GetGachaInfoReq(player *model.Player, payloadMsg pb.Messag
 			CostItemNum:            1,
 			TenCostItemId:          224,
 			TenCostItemNum:         10,
-			GachaRecordUrl:         serverAddr + "/gm/gacha?gachaType=201&jwt=" + jwtStr,
-			GachaRecordUrlOversea:  serverAddr + "/gm/gacha?gachaType=201&jwt=" + jwtStr,
-			GachaProbUrl:           serverAddr + "/gm/gacha/details?scheduleId=813&jwt=" + jwtStr,
-			GachaProbUrlOversea:    serverAddr + "/gm/gacha/details?scheduleId=813&jwt=" + jwtStr,
+			GachaRecordUrl:         serverAddr + "/gacha?gachaType=201&jwt=" + jwtStr,
+			GachaRecordUrlOversea:  serverAddr + "/gacha?gachaType=201&jwt=" + jwtStr,
+			GachaProbUrl:           serverAddr + "/gacha/details?scheduleId=813&jwt=" + jwtStr,
+			GachaProbUrlOversea:    serverAddr + "/gacha/details?scheduleId=813&jwt=" + jwtStr,
 			GachaUpInfoList: []*proto.GachaUpInfo{
 				{
 					ItemParentType: 1,
@@ -190,14 +190,13 @@ func (g *GameManager) GetGachaInfoReq(player *model.Player, payloadMsg pb.Messag
 			IsNewWish:          false,
 		},
 	}
-	g.SendMsg(cmd.GetGachaInfoRsp, player.PlayerID, player.ClientSeq, getGachaInfoRsp)
+	g.SendMsg(cmd.GetGachaInfoRsp, player.PlayerId, player.ClientSeq, getGachaInfoRsp)
 }
 
-func (g *GameManager) DoGachaReq(player *model.Player, payloadMsg pb.Message) {
+func (g *Game) DoGachaReq(player *model.Player, payloadMsg pb.Message) {
 	req := payloadMsg.(*proto.DoGachaReq)
 	gachaScheduleId := req.GachaScheduleId
 	gachaTimes := req.GachaTimes
-
 	gachaType := uint32(0)
 	costItemId := uint32(0)
 	switch gachaScheduleId {
@@ -218,15 +217,11 @@ func (g *GameManager) DoGachaReq(player *model.Player, payloadMsg pb.Message) {
 		gachaType = 201
 		costItemId = 224
 	}
-
 	// 先扣掉粉球或蓝球再进行抽卡
-	g.CostUserItem(player.PlayerID, []*ChangeItem{
-		{
-			ItemId:      costItemId,
-			ChangeCount: gachaTimes,
-		},
-	})
-
+	ok := g.CostPlayerItem(player.PlayerId, []*ChangeItem{{ItemId: costItemId, ChangeCount: gachaTimes}})
+	if !ok {
+		return
+	}
 	doGachaRsp := &proto.DoGachaRsp{
 		GachaType:       gachaType,
 		GachaScheduleId: gachaScheduleId,
@@ -240,7 +235,6 @@ func (g *GameManager) DoGachaReq(player *model.Player, payloadMsg pb.Message) {
 		TenCostItemNum:  10,
 		GachaItemList:   make([]*proto.GachaItem, 0),
 	}
-
 	for i := uint32(0); i < gachaTimes; i++ {
 		var ok bool
 		var itemId uint32
@@ -249,82 +243,62 @@ func (g *GameManager) DoGachaReq(player *model.Player, payloadMsg pb.Message) {
 			ok, itemId = g.doGachaKlee()
 		} else if gachaType == 300 {
 			// 角色UP池
-			ok, itemId = g.doGachaOnce(player.PlayerID, gachaType, true, false)
+			ok, itemId = g.doGachaOnce(player.PlayerId, gachaType, true, false)
 		} else if gachaType == 431 {
 			// 武器UP池
-			ok, itemId = g.doGachaOnce(player.PlayerID, gachaType, true, true)
+			ok, itemId = g.doGachaOnce(player.PlayerId, gachaType, true, true)
 		} else if gachaType == 201 {
 			// 常驻
-			ok, itemId = g.doGachaOnce(player.PlayerID, gachaType, false, false)
+			ok, itemId = g.doGachaOnce(player.PlayerId, gachaType, false, false)
 		} else {
 			ok, itemId = false, 0
 		}
 		if !ok {
 			itemId = 11301
 		}
-
 		// 添加抽卡获得的道具
 		if itemId > 1000 && itemId < 2000 {
 			avatarId := (itemId % 1000) + 10000000
 			dbAvatar := player.GetDbAvatar()
-			_, exist := dbAvatar.AvatarMap[avatarId]
-			if !exist {
-				g.AddUserAvatar(player.PlayerID, avatarId)
+			avatar := dbAvatar.GetAvatarById(avatarId)
+			if avatar == nil {
+				g.AddPlayerAvatar(player.PlayerId, avatarId)
 			} else {
 				constellationItemId := itemId + 100
-				dbItem := player.GetDbItem()
-				if dbItem.GetItemCount(player, constellationItemId) < 6 {
-					g.AddUserItem(player.PlayerID, []*ChangeItem{{ItemId: constellationItemId, ChangeCount: 1}}, false, 0)
+				if g.GetPlayerItemCount(player.PlayerId, constellationItemId) < 6 {
+					g.AddPlayerItem(player.PlayerId, []*ChangeItem{{ItemId: constellationItemId, ChangeCount: 1}}, proto.ActionReasonType_ACTION_REASON_GACHA)
 				}
 			}
 		} else if itemId > 10000 && itemId < 20000 {
-			g.AddUserWeapon(player.PlayerID, itemId)
+			g.AddPlayerWeapon(player.PlayerId, itemId)
 		} else {
-			g.AddUserItem(player.PlayerID, []*ChangeItem{{ItemId: itemId, ChangeCount: 1}}, false, 0)
+			g.AddPlayerItem(player.PlayerId, []*ChangeItem{{ItemId: itemId, ChangeCount: 1}}, proto.ActionReasonType_ACTION_REASON_GACHA)
 		}
-
 		// 计算星尘星辉
 		xc := uint32(random.GetRandomInt32(0, 10))
 		xh := uint32(random.GetRandomInt32(0, 10))
-
 		gachaItem := new(proto.GachaItem)
-		gachaItem.GachaItem = &proto.ItemParam{
-			ItemId: itemId,
-			Count:  1,
-		}
+		gachaItem.GachaItem = &proto.ItemParam{ItemId: itemId, Count: 1}
 		// 星尘
 		if xc != 0 {
-			g.AddUserItem(player.PlayerID, []*ChangeItem{{
-				ItemId:      222,
-				ChangeCount: xc,
-			}}, false, 0)
-			gachaItem.TokenItemList = []*proto.ItemParam{{
-				ItemId: 222,
-				Count:  xc,
-			}}
+			g.AddPlayerItem(player.PlayerId, []*ChangeItem{{ItemId: 222, ChangeCount: xc}}, proto.ActionReasonType_ACTION_REASON_GACHA)
+			gachaItem.TokenItemList = []*proto.ItemParam{{ItemId: 222, Count: xc}}
 		}
 		// 星辉
 		if xh != 0 {
-			g.AddUserItem(player.PlayerID, []*ChangeItem{{
-				ItemId:      221,
-				ChangeCount: xh,
-			}}, false, 0)
-			gachaItem.TransferItems = []*proto.GachaTransferItem{{
-				Item: &proto.ItemParam{
-					ItemId: 221,
-					Count:  xh,
-				},
-			}}
+			g.AddPlayerItem(player.PlayerId, []*ChangeItem{{ItemId: 221, ChangeCount: xh}}, proto.ActionReasonType_ACTION_REASON_GACHA)
+			gachaItem.TransferItems = []*proto.GachaTransferItem{{Item: &proto.ItemParam{ItemId: 221, Count: xh}}}
 		}
 		doGachaRsp.GachaItemList = append(doGachaRsp.GachaItemList, gachaItem)
 	}
-
 	logger.Debug("doGachaRsp: %v", doGachaRsp.String())
-	g.SendMsg(cmd.DoGachaRsp, player.PlayerID, player.ClientSeq, doGachaRsp)
+	g.SendMsg(cmd.DoGachaRsp, player.PlayerId, player.ClientSeq, doGachaRsp)
 }
 
+/************************************************** 游戏功能 **************************************************/
+
 // 扣1给可莉刷烧烤酱
-func (g *GameManager) doGachaKlee() (bool, uint32) {
+func (g *Game) doGachaKlee() (bool, uint32) {
 	allAvatarList := make([]uint32, 0)
 	allAvatarDataConfig := g.GetAllAvatarDataConfig()
 	for k, v := range allAvatarDataConfig {
@@ -377,32 +351,28 @@ const (
 )
 
 // 单抽一次
-func (g *GameManager) doGachaOnce(userId uint32, gachaType uint32, mustGetUpEnable bool, weaponFix bool) (bool, uint32) {
+func (g *Game) doGachaOnce(userId uint32, gachaType uint32, mustGetUpEnable bool, weaponFix bool) (bool, uint32) {
 	player := USER_MANAGER.GetOnlineUser(userId)
 	if player == nil {
 		logger.Error("player is nil, uid: %v", userId)
 		return false, 0
 	}
-
 	// 找到卡池对应的掉落组
-	dropGroupDataConfig := gdconf.CONF.DropGroupDataMap[int32(gachaType)]
+	dropGroupDataConfig := gdconf.GetGachaDropGroupDataByDropId(int32(gachaType))
 	if dropGroupDataConfig == nil {
 		logger.Error("drop group not found, drop id: %v", gachaType)
 		return false, 0
 	}
-
 	// 获取用户的卡池保底信息
 	dbGacha := player.GetDbGacha()
 	gachaPoolInfo := dbGacha.GachaPoolInfo[gachaType]
 	if gachaPoolInfo == nil {
-		logger.Error("user gacha pool info not found, gacha type: %v", gachaType)
+		logger.Error("player gacha pool info not found, gacha type: %v", gachaType)
 		return false, 0
 	}
-
 	// 保底计数+1
 	gachaPoolInfo.OrangeTimes++
 	gachaPoolInfo.PurpleTimes++
-
 	// 4星和5星概率修正
 	OrangeTimesFixThreshold := uint32(0)
 	OrangeTimesFixValue := int32(0)
@@ -420,7 +390,7 @@ func (g *GameManager) doGachaOnce(userId uint32, gachaType uint32, mustGetUpEnab
 		PurpleTimesFixValue = WeaponPurpleTimesFixValue
 	}
 	if gachaPoolInfo.OrangeTimes >= OrangeTimesFixThreshold || gachaPoolInfo.PurpleTimes >= PurpleTimesFixThreshold {
-		fixDropGroupDataConfig := new(gdconf.DropGroupData)
+		fixDropGroupDataConfig := new(gdconf.GachaDropGroupData)
 		fixDropGroupDataConfig.DropId = dropGroupDataConfig.DropId
 		fixDropGroupDataConfig.WeightAll = dropGroupDataConfig.WeightAll
 		// 计算4星和5星权重修正值
@@ -433,7 +403,7 @@ func (g *GameManager) doGachaOnce(userId uint32, gachaType uint32, mustGetUpEnab
 			addPurpleWeight = 0
 		}
 		for _, drop := range dropGroupDataConfig.DropConfig {
-			fixDrop := new(gdconf.Drop)
+			fixDrop := new(gdconf.GachaDrop)
 			fixDrop.Result = drop.Result
 			fixDrop.DropId = drop.DropId
 			fixDrop.IsEnd = drop.IsEnd
@@ -456,9 +426,8 @@ func (g *GameManager) doGachaOnce(userId uint32, gachaType uint32, mustGetUpEnab
 		}
 		dropGroupDataConfig = fixDropGroupDataConfig
 	}
-
 	// 掉落
-	ok, drop := g.doFullRandDrop(dropGroupDataConfig)
+	ok, drop := g.doGachaRandDropFull(dropGroupDataConfig)
 	if !ok {
 		return false, 0
 	}
@@ -528,12 +497,12 @@ func (g *GameManager) doGachaOnce(userId uint32, gachaType uint32, mustGetUpEnab
 			// 替换本次结果为5星大保底
 			if gachaPoolInfo.MustGetUpOrange {
 				logger.Debug("trigger must get up orange, uid: %v", userId)
-				upOrangeDropGroupDataConfig := gdconf.CONF.DropGroupDataMap[upOrangeDropId]
+				upOrangeDropGroupDataConfig := gdconf.GetGachaDropGroupDataByDropId(upOrangeDropId)
 				if upOrangeDropGroupDataConfig == nil {
 					logger.Error("drop group not found, drop id: %v", upOrangeDropId)
 					return false, 0
 				}
-				upOrangeOk, upOrangeDrop := g.doFullRandDrop(upOrangeDropGroupDataConfig)
+				upOrangeOk, upOrangeDrop := g.doGachaRandDropFull(upOrangeDropGroupDataConfig)
 				if !upOrangeOk {
 					return false, 0
 				}
@@ -555,12 +524,12 @@ func (g *GameManager) doGachaOnce(userId uint32, gachaType uint32, mustGetUpEnab
 			// 替换本次结果为4星大保底
 			if gachaPoolInfo.MustGetUpPurple {
 				logger.Debug("trigger must get up purple, uid: %v", userId)
-				upPurpleDropGroupDataConfig := gdconf.CONF.DropGroupDataMap[upPurpleDropId]
+				upPurpleDropGroupDataConfig := gdconf.GetGachaDropGroupDataByDropId(upPurpleDropId)
 				if upPurpleDropGroupDataConfig == nil {
 					logger.Error("drop group not found, drop id: %v", upPurpleDropId)
 					return false, 0
 				}
-				upPurpleOk, upPurpleDrop := g.doFullRandDrop(upPurpleDropGroupDataConfig)
+				upPurpleOk, upPurpleDrop := g.doGachaRandDropFull(upPurpleDropGroupDataConfig)
 				if !upPurpleOk {
 					return false, 0
 				}
@@ -579,11 +548,11 @@ func (g *GameManager) doGachaOnce(userId uint32, gachaType uint32, mustGetUpEnab
 }
 
 // 走一次完整流程的掉落组
-func (g *GameManager) doFullRandDrop(dropGroupDataConfig *gdconf.DropGroupData) (bool, *gdconf.Drop) {
-	for {
-		drop := g.doRandDropOnce(dropGroupDataConfig)
+func (g *Game) doGachaRandDropFull(gachaDropGroupDataConfig *gdconf.GachaDropGroupData) (bool, *gdconf.GachaDrop) {
+	for i := 0; i < 1000; i++ {
+		drop := g.doGachaRandDropOnce(gachaDropGroupDataConfig)
 		if drop == nil {
-			logger.Error("weight error, drop group config: %v", dropGroupDataConfig)
+			logger.Error("weight error, drop config: %v", gachaDropGroupDataConfig)
 			return false, nil
 		}
 		if drop.IsEnd {
@@ -591,19 +560,20 @@ func (g *GameManager) doFullRandDrop(dropGroupDataConfig *gdconf.DropGroupData) 
 			return true, drop
 		}
 		// 进行下一步掉落流程
-		dropGroupDataConfig = gdconf.CONF.DropGroupDataMap[drop.Result]
-		if dropGroupDataConfig == nil {
-			logger.Error("drop config tab exist error, invalid drop id: %v", drop.Result)
+		gachaDropGroupDataConfig = gdconf.GetGachaDropGroupDataByDropId(drop.Result)
+		if gachaDropGroupDataConfig == nil {
+			logger.Error("drop config error, drop id: %v", drop.Result)
 			return false, nil
 		}
 	}
+	logger.Error("drop overtimes, drop config: %v", gachaDropGroupDataConfig)
+	return false, nil
 }
 
-// 进行单次随机掉落
-func (g *GameManager) doRandDropOnce(dropGroupDataConfig *gdconf.DropGroupData) *gdconf.Drop {
+// 进行单次随机掉落 轮盘赌选择法RWS
+func (g *Game) doGachaRandDropOnce(dropGroupDataConfig *gdconf.GachaDropGroupData) *gdconf.GachaDrop {
 	randNum := random.GetRandomInt32(0, dropGroupDataConfig.WeightAll-1)
 	sumWeight := int32(0)
-	// 轮盘选择法
 	for _, drop := range dropGroupDataConfig.DropConfig {
 		sumWeight += drop.Weight
 		if sumWeight > randNum {
@@ -612,3 +582,5 @@ func (g *GameManager) doRandDropOnce(dropGroupDataConfig *gdconf.DropGroupData) 
 	}
 	return nil
 }
+
+/************************************************** 打包封装 **************************************************/

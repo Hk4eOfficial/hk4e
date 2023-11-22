@@ -3,11 +3,8 @@ package object
 import (
 	"bytes"
 	"encoding/gob"
-	"encoding/json"
 	"fmt"
-	"strings"
 
-	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 	pb "google.golang.org/protobuf/proto"
 )
@@ -42,74 +39,20 @@ func DeepUnmarshal(dst any, data []byte) error {
 	return nil
 }
 
-func CopyProtoBufSameField(dst, src pb.Message) ([]string, error) {
-	data, err := protojson.Marshal(src)
+func CopyProtoBufSameField(dst, src pb.Message) error {
+	data, err := protojson.MarshalOptions{
+		UseEnumNumbers: true,
+	}.Marshal(src)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	delList := make([]string, 0)
-	loopCount := 0
-	for {
-		loopCount++
-		if loopCount > 1000 {
-			return nil, errors.New("loop count limit")
-		}
-		err = protojson.Unmarshal(data, dst)
-		if err != nil {
-			if !strings.Contains(err.Error(), "unknown field") {
-				return nil, err
-			}
-			split := strings.Split(err.Error(), "\"")
-			if len(split) != 3 {
-				return nil, err
-			}
-			fieldName := split[1]
-			jsonObj := make(map[string]any)
-			err = json.Unmarshal(data, &jsonObj)
-			if err != nil {
-				return nil, err
-			}
-			DeleteAllKeyNameFromStringAnyMap(jsonObj, fieldName)
-			delList = append(delList, fieldName)
-			data, err = json.Marshal(jsonObj)
-			if err != nil {
-				return nil, err
-			}
-			continue
-		} else {
-			break
-		}
+	err = protojson.UnmarshalOptions{
+		DiscardUnknown: true,
+	}.Unmarshal(data, dst)
+	if err != nil {
+		return err
 	}
-	return delList, nil
-}
-
-func DeleteAllKeyNameFromStringAnyMap(src map[string]any, keyName string) {
-	for key, value := range src {
-		vm, ok := value.(map[string]any)
-		if ok {
-			DeleteAllKeyNameFromStringAnyMap(vm, keyName)
-		}
-		vs, ok := value.([]any)
-		if ok {
-			DeleteAllKeyNameFromAnyList(vs, keyName)
-		}
-		if key == keyName {
-			delete(src, key)
-		}
-	}
-}
-
-func DeleteAllKeyNameFromAnyList(src []any, keyName string) {
-	for _, value := range src {
-		vm, ok := value.(map[string]any)
-		if ok {
-			DeleteAllKeyNameFromStringAnyMap(vm, keyName)
-		}
-		vs, ok := value.([]any)
-		if ok {
-			DeleteAllKeyNameFromAnyList(vs, keyName)
-		}
-	}
+	return nil
 }
 
 func ConvBoolToInt64(v bool) int64 {

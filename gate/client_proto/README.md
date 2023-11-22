@@ -8,6 +8,5 @@
 
 > 1. 在此目录下建立proto目录
 > 2. 将对应版本的proto协议文件和client_cmd.csv协议号文件复制到proto目录下
-> 3. 到项目根目录下执行`make gen_client_proto`(本操作可能会修改proto文件，请注意备份)
-> 4. 执行`protoc --go_out=. *.proto`，将proto目录下的proto协议文件编译成pb.go
-> 5. 将gate和gs和fight服务器的配置文件中开启client_proto_proxy_enable客户端协议代理功能
+> 3. 到项目根目录下执行`make gen_client_proto`
+> 4. 将gate服务器的配置文件中开启client_proto_proxy_enable客户端协议代理功能

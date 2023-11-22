@@ -20,8 +20,8 @@ type Dao struct {
 	redisCluster *redis.ClusterClient
 }
 
-func NewDao() (r *Dao, err error) {
-	r = new(Dao)
+func NewDao() (*Dao, error) {
+	r := new(Dao)
 
 	clientOptions := options.Client().ApplyURI(config.GetConfig().Database.Url).SetMinPoolSize(1).SetMaxPoolSize(10)
 	client, err := mongo.Connect(context.TODO(), clientOptions)

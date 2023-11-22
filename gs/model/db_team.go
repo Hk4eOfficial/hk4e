@@ -1,11 +1,5 @@
 package model
 
-import (
-	"hk4e/common/constant"
-	"hk4e/gdconf"
-	"hk4e/pkg/logger"
-)
-
 type Team struct {
 	Name         string
 	AvatarIdList []uint32
@@ -42,57 +36,23 @@ type DbTeam struct {
 
 func (p *Player) GetDbTeam() *DbTeam {
 	if p.DbTeam == nil {
-		p.DbTeam = NewDbTeam()
+		p.DbTeam = new(DbTeam)
+	}
+	if p.DbTeam.TeamList == nil {
+		p.DbTeam.TeamList = []*Team{
+			{Name: "", AvatarIdList: make([]uint32, 4)},
+			{Name: "", AvatarIdList: make([]uint32, 4)},
+			{Name: "", AvatarIdList: make([]uint32, 4)},
+			{Name: "", AvatarIdList: make([]uint32, 4)},
+		}
+	}
+	if p.DbTeam.CurrTeamIndex == 0 {
+		p.DbTeam.CurrTeamIndex = 0
+	}
+	if p.DbTeam.CurrAvatarIndex == 0 {
+		p.DbTeam.CurrAvatarIndex = 0
 	}
 	return p.DbTeam
-}
-
-func NewDbTeam() (r *DbTeam) {
-	r = &DbTeam{
-		TeamList: []*Team{
-			{Name: "冒险", AvatarIdList: make([]uint32, 4)},
-			{Name: "委托", AvatarIdList: make([]uint32, 4)},
-			{Name: "秘境", AvatarIdList: make([]uint32, 4)},
-			{Name: "联机", AvatarIdList: make([]uint32, 4)},
-		},
-		CurrTeamIndex:   0,
-		CurrAvatarIndex: 0,
-	}
-	return r
-}
-
-func (t *DbTeam) UpdateTeam() {
-	activeTeam := t.GetActiveTeam()
-	// TODO 队伍元素共鸣
-	t.TeamResonances = make(map[uint16]bool)
-	t.TeamResonancesConfig = make(map[int32]bool)
-	teamElementTypeCountMap := make(map[uint16]uint8)
-	for _, avatarId := range activeTeam.GetAvatarIdList() {
-		avatarSkillDataConfig := gdconf.GetAvatarEnergySkillConfig(avatarId)
-		if avatarSkillDataConfig == nil {
-			logger.Error("get avatar energy skill is nil, avatarId: %v", avatarId)
-			continue
-		}
-		elementType := constant.ElementTypeConst.VALUE_MAP[uint16(avatarSkillDataConfig.CostElemType)]
-		if elementType == nil {
-			logger.Error("get element type const is nil, value: %v", avatarSkillDataConfig.CostElemType)
-			continue
-		}
-		teamElementTypeCountMap[elementType.Value] += 1
-	}
-	for k, v := range teamElementTypeCountMap {
-		if v >= 2 {
-			element := constant.ElementTypeConst.VALUE_MAP[k]
-			if element.TeamResonanceId != 0 {
-				t.TeamResonances[element.TeamResonanceId] = true
-				t.TeamResonancesConfig[element.ConfigHash] = true
-			}
-		}
-	}
-	if len(t.TeamResonances) == 0 {
-		t.TeamResonances[constant.ElementTypeConst.Default.TeamResonanceId] = true
-		t.TeamResonancesConfig[int32(constant.ElementTypeConst.Default.TeamResonanceId)] = true
-	}
 }
 
 func (t *DbTeam) GetActiveTeamId() uint8 {

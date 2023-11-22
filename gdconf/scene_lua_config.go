@@ -2,9 +2,10 @@ package gdconf
 
 import (
 	"os"
+	"sort"
 	"strconv"
 	"sync"
-	"sync/atomic"
+	"time"
 
 	"hk4e/pkg/logger"
 
@@ -14,10 +15,9 @@ import (
 // 场景详情配置数据
 
 const (
-	SceneGroupLoaderLimit = 4 // 加载文件的并发数 此操作很耗内存 调大之前请确保你的机器内存足够
+	SceneGroupLoaderLimit = 4    // 加载文件的并发数 此操作很耗内存 调大之前请确保你的机器内存足够
+	LuaStateLruKeepNum    = 1000 // 内存常驻LUA虚拟机实例数量上限
 )
-
-var OBJECT_ID_COUNTER uint64
 
 type SceneLuaConfig struct {
 	Id          int32
@@ -53,31 +53,28 @@ type BlockRange struct {
 }
 
 type Group struct {
-	Id            int32        `json:"id"`
-	RefreshId     int32        `json:"refresh_id"`
-	Area          int32        `json:"area"`
-	Pos           *Vector      `json:"pos"`
-	DynamicLoad   bool         `json:"dynamic_load"`
-	IsReplaceable *Replaceable `json:"is_replaceable"`
-	MonsterList   []*Monster   `json:"monsters"` // 怪物
-	NpcList       []*Npc       `json:"npcs"`     // NPC
-	GadgetList    []*Gadget    `json:"gadgets"`  // 物件
-	RegionList    []*Region    `json:"regions"`
-	TriggerList   []*Trigger   `json:"triggers"`
-	LuaStr        string       `json:"-"`
-	LuaState      *lua.LState  `json:"-"`
+	Id              int32                `json:"id"`
+	RefreshId       int32                `json:"refresh_id"`
+	Area            int32                `json:"area"`
+	Pos             *Vector              `json:"pos"`
+	DynamicLoad     bool                 `json:"dynamic_load"`
+	IsReplaceable   *Replaceable         `json:"is_replaceable"`
+	MonsterMap      map[int32]*Monster   `json:"-"` // 怪物
+	NpcMap          map[int32]*Npc       `json:"-"` // NPC
+	GadgetMap       map[int32]*Gadget    `json:"-"` // 物件
+	RegionMap       map[int32]*Region    `json:"-"` // 区域
+	TriggerMap      map[string]*Trigger  `json:"-"` // 触发器
+	VariableMap     map[string]*Variable `json:"-"` // 变量
+	GroupInitConfig *GroupInitConfig     `json:"-"` // 初始化配置
+	SuiteMap        map[int32]*Suite     `json:"-"` // 小组配置
+	LuaStr          string               `json:"-"` // LUA原始字符串缓存
+	LuaState        *lua.LState          `json:"-"` // LUA虚拟机实例
 }
 
-func (g *Group) GetLuaState() *lua.LState {
-	if g.LuaState == nil {
-		g.LuaState = newLuaState(g.LuaStr)
-		scriptLib := g.LuaState.NewTable()
-		g.LuaState.SetGlobal("ScriptLib", scriptLib)
-		for _, scriptLibFunc := range SCRIPT_LIB_FUNC_LIST {
-			g.LuaState.SetField(scriptLib, scriptLibFunc.fnName, g.LuaState.NewFunction(scriptLibFunc.fn))
-		}
-	}
-	return g.LuaState
+type GroupInitConfig struct {
+	Suite     int32 `json:"suite"`
+	EndSuite  int32 `json:"end_suite"`
+	RandSuite bool  `json:"rand_suite"`
 }
 
 type Replaceable struct {
@@ -93,7 +90,9 @@ type Monster struct {
 	Rot       *Vector `json:"rot"`
 	Level     int32   `json:"level"`
 	AreaId    int32   `json:"area_id"`
-	ObjectId  uint64  `json:"-"`
+	DropTag   string  `json:"drop_tag"` // 关联MonsterDropData表
+	DropId    int32   `json:"drop_id"`
+	IsOneOff  bool    `json:"isOneoff"`
 }
 
 type Npc struct {
@@ -102,18 +101,21 @@ type Npc struct {
 	Pos      *Vector `json:"pos"`
 	Rot      *Vector `json:"rot"`
 	AreaId   int32   `json:"area_id"`
-	ObjectId uint64  `json:"-"`
 }
 
 type Gadget struct {
-	ConfigId  int32   `json:"config_id"`
-	GadgetId  int32   `json:"gadget_id"`
-	Pos       *Vector `json:"pos"`
-	Rot       *Vector `json:"rot"`
-	Level     int32   `json:"level"`
-	AreaId    int32   `json:"area_id"`
-	PointType int32   `json:"point_type"` // 关联GatherData表
-	ObjectId  uint64  `json:"-"`
+	ConfigId    int32   `json:"config_id"`
+	GadgetId    int32   `json:"gadget_id"`
+	Pos         *Vector `json:"pos"`
+	Rot         *Vector `json:"rot"`
+	Level       int32   `json:"level"`
+	AreaId      int32   `json:"area_id"`
+	PointType   int32   `json:"point_type"` // 关联GatherData表
+	State       int32   `json:"state"`
+	VisionLevel int32   `json:"vision_level"`
+	DropTag     string  `json:"drop_tag"`
+	IsOneOff    bool    `json:"isOneoff"`
+	ChestDropId int32   `json:"chest_drop_id"`
 }
 
 type Region struct {
@@ -137,6 +139,29 @@ type Trigger struct {
 	TriggerCount int32  `json:"trigger_count"`
 }
 
+type Variable struct {
+	ConfigId  int32  `json:"config_id"`
+	Name      string `json:"name"`
+	Value     int32  `json:"value"`
+	NoRefresh bool   `json:"no_refresh"`
+}
+
+type SuiteLuaTable struct {
+	MonsterConfigIdList any   `json:"monsters"` // 怪物
+	GadgetConfigIdList  any   `json:"gadgets"`  // 物件
+	RegionConfigIdList  any   `json:"regions"`  // 区域
+	TriggerNameList     any   `json:"triggers"` // 触发器
+	RandWeight          int32 `json:"rand_weight"`
+}
+
+type Suite struct {
+	MonsterConfigIdList []int32
+	GadgetConfigIdList  []int32
+	RegionConfigIdList  []int32
+	TriggerNameList     []string
+	RandWeight          int32
+}
+
 func (g *GameDataConfig) loadGroup(group *Group, block *Block, sceneId int32, blockId int32) {
 	sceneLuaPrefix := g.luaPrefix + "scene/"
 	sceneIdStr := strconv.Itoa(int(sceneId))
@@ -149,54 +174,131 @@ func (g *GameDataConfig) loadGroup(group *Group, block *Block, sceneId int32, bl
 	}
 	group.LuaStr = string(groupLuaData)
 	luaState := newLuaState(group.LuaStr)
+	// init_config
+	group.GroupInitConfig = new(GroupInitConfig)
+	ok := getSceneLuaConfigTable[*GroupInitConfig](luaState, "init_config", group.GroupInitConfig)
+	if !ok {
+		logger.Error("get init_config object error, sceneId: %v, blockId: %v, groupId: %v", sceneId, blockId, groupId)
+		luaState.Close()
+		return
+	}
 	// monsters
-	group.MonsterList = make([]*Monster, 0)
-	ok := getSceneLuaConfigTable[*[]*Monster](luaState, "monsters", &group.MonsterList)
+	monsterList := make([]*Monster, 0)
+	ok = getSceneLuaConfigTable[*[]*Monster](luaState, "monsters", &monsterList)
 	if !ok {
 		logger.Error("get monsters object error, sceneId: %v, blockId: %v, groupId: %v", sceneId, blockId, groupId)
 		luaState.Close()
 		return
 	}
-	for _, monster := range group.MonsterList {
-		monster.ObjectId = atomic.AddUint64(&OBJECT_ID_COUNTER, 1)
+	group.MonsterMap = make(map[int32]*Monster)
+	for _, monster := range monsterList {
+		group.MonsterMap[monster.ConfigId] = monster
 	}
 	// npcs
-	group.NpcList = make([]*Npc, 0)
-	ok = getSceneLuaConfigTable[*[]*Npc](luaState, "npcs", &group.NpcList)
+	npcList := make([]*Npc, 0)
+	ok = getSceneLuaConfigTable[*[]*Npc](luaState, "npcs", &npcList)
 	if !ok {
 		logger.Error("get npcs object error, sceneId: %v, blockId: %v, groupId: %v", sceneId, blockId, groupId)
 		luaState.Close()
 		return
 	}
-	for _, npc := range group.NpcList {
-		npc.ObjectId = atomic.AddUint64(&OBJECT_ID_COUNTER, 1)
+	group.NpcMap = make(map[int32]*Npc)
+	for _, npc := range npcList {
+		group.NpcMap[npc.ConfigId] = npc
 	}
 	// gadgets
-	group.GadgetList = make([]*Gadget, 0)
-	ok = getSceneLuaConfigTable[*[]*Gadget](luaState, "gadgets", &group.GadgetList)
+	gadgetList := make([]*Gadget, 0)
+	ok = getSceneLuaConfigTable[*[]*Gadget](luaState, "gadgets", &gadgetList)
 	if !ok {
 		logger.Error("get gadgets object error, sceneId: %v, blockId: %v, groupId: %v", sceneId, blockId, groupId)
 		luaState.Close()
 		return
 	}
-	for _, gadget := range group.GadgetList {
-		gadget.ObjectId = atomic.AddUint64(&OBJECT_ID_COUNTER, 1)
+	group.GadgetMap = make(map[int32]*Gadget)
+	for _, gadget := range gadgetList {
+		group.GadgetMap[gadget.ConfigId] = gadget
 	}
 	// regions
-	group.RegionList = make([]*Region, 0)
-	ok = getSceneLuaConfigTable[*[]*Region](luaState, "regions", &group.RegionList)
+	regionList := make([]*Region, 0)
+	ok = getSceneLuaConfigTable[*[]*Region](luaState, "regions", &regionList)
 	if !ok {
 		logger.Error("get regions object error, sceneId: %v, blockId: %v, groupId: %v", sceneId, blockId, groupId)
 		luaState.Close()
 		return
 	}
+	group.RegionMap = make(map[int32]*Region)
+	for _, region := range regionList {
+		group.RegionMap[region.ConfigId] = region
+	}
 	// triggers
-	group.TriggerList = make([]*Trigger, 0)
-	ok = getSceneLuaConfigTable[*[]*Trigger](luaState, "triggers", &group.TriggerList)
+	triggerList := make([]*Trigger, 0)
+	ok = getSceneLuaConfigTable[*[]*Trigger](luaState, "triggers", &triggerList)
 	if !ok {
 		logger.Error("get triggers object error, sceneId: %v, blockId: %v, groupId: %v", sceneId, blockId, groupId)
 		luaState.Close()
 		return
+	}
+	group.TriggerMap = make(map[string]*Trigger)
+	for _, trigger := range triggerList {
+		group.TriggerMap[trigger.Name] = trigger
+	}
+	// variables
+	variableList := make([]*Variable, 0)
+	ok = getSceneLuaConfigTable[*[]*Variable](luaState, "variables", &variableList)
+	if !ok {
+		logger.Error("get variables object error, sceneId: %v, blockId: %v, groupId: %v", sceneId, blockId, groupId)
+		luaState.Close()
+		return
+	}
+	group.VariableMap = make(map[string]*Variable)
+	for _, variable := range variableList {
+		group.VariableMap[variable.Name] = variable
+	}
+	// suites
+	suiteLuaTableList := make([]*SuiteLuaTable, 0)
+	ok = getSceneLuaConfigTable[*[]*SuiteLuaTable](luaState, "suites", &suiteLuaTableList)
+	if !ok {
+		logger.Error("get suites object error, sceneId: %v, blockId: %v, groupId: %v", sceneId, blockId, groupId)
+		luaState.Close()
+		return
+	}
+	if len(suiteLuaTableList) == 0 {
+		// logger.Debug("get suites object is nil, sceneId: %v, blockId: %v, groupId: %v", sceneId, blockId, groupId)
+	}
+	group.SuiteMap = make(map[int32]*Suite)
+	for index, suiteLuaTable := range suiteLuaTableList {
+		suite := &Suite{
+			MonsterConfigIdList: make([]int32, 0),
+			GadgetConfigIdList:  make([]int32, 0),
+			RegionConfigIdList:  make([]int32, 0),
+			TriggerNameList:     make([]string, 0),
+			RandWeight:          suiteLuaTable.RandWeight,
+		}
+		idAnyList, ok := suiteLuaTable.MonsterConfigIdList.([]any)
+		if ok {
+			for _, idAny := range idAnyList {
+				suite.MonsterConfigIdList = append(suite.MonsterConfigIdList, int32(idAny.(float64)))
+			}
+		}
+		idAnyList, ok = suiteLuaTable.GadgetConfigIdList.([]any)
+		if ok {
+			for _, idAny := range idAnyList {
+				suite.GadgetConfigIdList = append(suite.GadgetConfigIdList, int32(idAny.(float64)))
+			}
+		}
+		idAnyList, ok = suiteLuaTable.RegionConfigIdList.([]any)
+		if ok {
+			for _, idAny := range idAnyList {
+				suite.RegionConfigIdList = append(suite.RegionConfigIdList, int32(idAny.(float64)))
+			}
+		}
+		nameAnyList, ok := suiteLuaTable.TriggerNameList.([]any)
+		if ok {
+			for _, nameAny := range nameAnyList {
+				suite.TriggerNameList = append(suite.TriggerNameList, nameAny.(string))
+			}
+		}
+		group.SuiteMap[int32(len(suiteLuaTableList)-index)] = suite
 	}
 	luaState.Close()
 	block.groupMapLoadLock.Lock()
@@ -204,9 +306,13 @@ func (g *GameDataConfig) loadGroup(group *Group, block *Block, sceneId int32, bl
 	block.groupMapLoadLock.Unlock()
 }
 
-func (g *GameDataConfig) loadSceneLuaConfig() {
-	OBJECT_ID_COUNTER = 0
+func (g *GameDataConfig) loadSceneLuaConfig(loadSceneLua bool) {
 	g.SceneLuaConfigMap = make(map[int32]*SceneLuaConfig)
+	g.GroupMap = make(map[int32]*Group)
+	g.LuaStateLruMap = make(map[int32]*LuaStateLru)
+	if !loadSceneLua {
+		return
+	}
 	sceneLuaPrefix := g.luaPrefix + "scene/"
 	for _, sceneData := range g.SceneDataMap {
 		sceneId := sceneData.SceneId
@@ -279,6 +385,7 @@ func (g *GameDataConfig) loadSceneLuaConfig() {
 					<-wc
 					wg.Done()
 				}()
+				g.GroupMap[group.Id] = group
 			}
 			wg.Wait()
 			sceneLuaConfig.BlockMap[block.Id] = block
@@ -294,9 +401,9 @@ func (g *GameDataConfig) loadSceneLuaConfig() {
 	for _, scene := range g.SceneLuaConfigMap {
 		for _, block := range scene.BlockMap {
 			for _, group := range block.GroupMap {
-				monsterCount += len(group.MonsterList)
-				npcCount += len(group.NpcList)
-				gadgetCount += len(group.GadgetList)
+				monsterCount += len(group.MonsterMap)
+				npcCount += len(group.NpcMap)
+				gadgetCount += len(group.GadgetMap)
 				groupCount++
 			}
 			blockCount++
@@ -315,29 +422,64 @@ func GetSceneLuaConfigMap() map[int32]*SceneLuaConfig {
 	return CONF.SceneLuaConfigMap
 }
 
-func GetSceneBlockConfig(sceneId int32, blockId int32) ([]*Monster, []*Npc, []*Gadget, bool) {
-	monsterList := make([]*Monster, 0)
-	npcList := make([]*Npc, 0)
-	gadgetList := make([]*Gadget, 0)
-	sceneConfig, exist := CONF.SceneLuaConfigMap[sceneId]
+func GetSceneGroup(groupId int32) *Group {
+	groupConfig, exist := CONF.GroupMap[groupId]
 	if !exist {
-		return nil, nil, nil, false
+		return nil
 	}
-	blockConfig, exist := sceneConfig.BlockMap[blockId]
-	if !exist {
-		return nil, nil, nil, false
-	}
-	for _, groupConfig := range blockConfig.GroupMap {
-		for _, monsterConfig := range groupConfig.MonsterList {
-			monsterList = append(monsterList, monsterConfig)
-		}
-		for _, npcConfig := range groupConfig.NpcList {
-			npcList = append(npcList, npcConfig)
-		}
+	return groupConfig
+}
 
-		for _, gadgetConfig := range groupConfig.GadgetList {
-			gadgetList = append(gadgetList, gadgetConfig)
+type LuaStateLru struct {
+	GroupId    int32
+	AccessTime int64
+}
+
+type LuaStateLruList []*LuaStateLru
+
+func (l LuaStateLruList) Len() int {
+	return len(l)
+}
+
+func (l LuaStateLruList) Less(i, j int) bool {
+	return l[i].AccessTime < l[j].AccessTime
+}
+
+func (l LuaStateLruList) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
+}
+
+func LuaStateLruRemove() {
+	removeNum := len(CONF.LuaStateLruMap) - LuaStateLruKeepNum
+	if removeNum <= 0 {
+		return
+	}
+	luaStateLruList := make(LuaStateLruList, 0)
+	for _, luaStateLru := range CONF.LuaStateLruMap {
+		luaStateLruList = append(luaStateLruList, luaStateLru)
+	}
+	sort.Stable(luaStateLruList)
+	for i := 0; i < removeNum; i++ {
+		luaStateLru := luaStateLruList[i]
+		group := GetSceneGroup(luaStateLru.GroupId)
+		group.LuaState = nil
+		delete(CONF.LuaStateLruMap, luaStateLru.GroupId)
+	}
+	logger.Info("lua state lru remove finish, remove num: %v", removeNum)
+}
+
+func (g *Group) GetLuaState() *lua.LState {
+	CONF.LuaStateLruMap[g.Id] = &LuaStateLru{
+		GroupId:    g.Id,
+		AccessTime: time.Now().UnixMilli(),
+	}
+	if g.LuaState == nil {
+		g.LuaState = newLuaState(g.LuaStr)
+		scriptLib := g.LuaState.NewTable()
+		g.LuaState.SetGlobal("ScriptLib", scriptLib)
+		for _, scriptLibFunc := range SCRIPT_LIB_FUNC_LIST {
+			g.LuaState.SetField(scriptLib, scriptLibFunc.fnName, g.LuaState.NewFunction(scriptLibFunc.fn))
 		}
 	}
-	return monsterList, npcList, gadgetList, true
+	return g.LuaState
 }

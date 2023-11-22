@@ -830,10 +830,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 2,
@@ -1666,9 +1663,6 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   }
 ]

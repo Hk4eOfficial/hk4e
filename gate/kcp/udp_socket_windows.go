@@ -1,5 +1,5 @@
-//go:build !linux
-// +build !linux
+//go:build windows
+// +build windows
 
 package kcp
 
@@ -7,12 +7,16 @@ import (
 	"golang.org/x/net/ipv4"
 )
 
-func (s *UDPSession) readLoop() {
-	s.defaultReadLoop()
+func (s *UDPSession) rx() {
+	s.defaultRx()
 }
 
-func (l *Listener) monitor() {
-	l.defaultMonitor()
+func (l *Listener) rx() {
+	l.defaultRx()
+}
+
+func (s *UDPSession) tx(txqueue []ipv4.Message) {
+	s.defaultTx(txqueue)
 }
 
 func (l *Listener) SendEnetNotifyToPeer(enet *Enet) {
@@ -21,8 +25,4 @@ func (l *Listener) SendEnetNotifyToPeer(enet *Enet) {
 
 func (s *UDPSession) SendEnetNotifyToPeer(enet *Enet) {
 	s.defaultSendEnetNotifyToPeer(enet)
-}
-
-func (s *UDPSession) tx(txqueue []ipv4.Message) {
-	s.defaultTx(txqueue)
 }

@@ -9,14 +9,15 @@ import (
 )
 
 func GSCmd() *cobra.Command {
-	var cfg string
+	var configFile string
+	app.APPVERSION = VERSION
 	c := &cobra.Command{
 		Use:   "gs",
 		Short: "game server",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return app.Run(context.Background(), cfg)
+			return app.Run(context.Background(), configFile)
 		},
 	}
-	c.Flags().StringVar(&cfg, "config", "application.toml", "config file")
+	c.Flags().StringVar(&configFile, "config", "application.toml", "config file")
 	return c
 }

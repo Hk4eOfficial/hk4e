@@ -87,12 +87,9 @@ suites = {
 function action_EVENT_OBSERVATION_POINT_NOTIFY_16006(context, evt)
 	if 16001 == evt.param1 or 205 == evt.param2 then
 		ScriptLib.SetGadgetStateByConfigId(context,16003, GadgetState.GearStop)
-		
 		ScriptLib.SetGadgetStateByConfigId(context,16002, GadgetState.ChestLocked)
-		
 		ScriptLib.SetGadgetStateByConfigId(context,16001, 205)
 	end
-	
 	return 0
 end
 
@@ -100,12 +97,9 @@ end
 function action_EVENT_OBSERVATION_POINT_NOTIFY_16007(context, evt)
 	if 16002 == evt.param1 and 205 == evt.param2 then
 		ScriptLib.SetGadgetStateByConfigId(context,16003, GadgetState.GearStart)
-		
 		ScriptLib.SetGadgetStateByConfigId(context,16001, GadgetState.ChestLocked)
-		
 		ScriptLib.SetGadgetStateByConfigId(context,16002, 205)
 	end
-	
 	return 0
 end
 
@@ -113,12 +107,9 @@ end
 function action_EVENT_OBSERVATION_POINT_NOTIFY_16008(context, evt)
 	if 16001 == evt.param1 and 0 == evt.param2 then
 		ScriptLib.SetGadgetStateByConfigId(context,16002, GadgetState.Default)
-		
 		ScriptLib.SetGadgetStateByConfigId(context,16003, GadgetState.Default)
-		
 		ScriptLib.SetGadgetStateByConfigId(context,16001, GadgetState.Default)
 	end
-	
 	return 0
 end
 
@@ -126,12 +117,9 @@ end
 function action_EVENT_OBSERVATION_POINT_NOTIFY_16009(context, evt)
 	if 16002 == evt.param1 and 0 == evt.param2 then
 		ScriptLib.SetGadgetStateByConfigId(context,16001, GadgetState.Default)
-		
 		ScriptLib.SetGadgetStateByConfigId(context,16003, GadgetState.Default)
-		
 		ScriptLib.SetGadgetStateByConfigId(context,16002, GadgetState.Default)
 	end
-	
 	return 0
 end
 

@@ -251,6 +251,5 @@ function action_EVENT_GROUP_LOAD_2019(context, evt)
 	else
 		ScriptLib.SetGadgetStateByConfigId(context,2001, GadgetState.GearStop)
 	end
-	
 	return 0
 end

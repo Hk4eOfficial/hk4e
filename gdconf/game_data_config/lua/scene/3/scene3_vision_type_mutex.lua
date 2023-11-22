@@ -91,17 +91,5 @@ mutex_table = {
 		target = {
 			33090009
 		}
-	},
-	{
-		source = 33130006,
-		target = {
-			33140004
-		}
-	},
-	{
-		source = 33130018,
-		target = {
-			33140006
-		}
 	}
 }

@@ -144,30 +144,21 @@ suites = {
 function action_EVENT_SELECT_OPTION_6003(context, evt)
 	if evt.param2 == 7 and ScriptLib.GetGroupVariableValue(context, "turn") == 0 then
 		ScriptLib.SetGroupVariableValueByGroup(context, "room3", 1, 220135003)
-		
 		ScriptLib.SetGroupVariableValue(context, "turn", 1)
-		
-		ScriptLib.SetPlatformPointArray(context, 6001, 1, {1}, {route_type=RouteType.OneWay, turn_mode=true, record_mode=RouteRecordMode.Prereach, speed_level=0, arrive_range=0})
-		
+		ScriptLib.SetPlatformPointArray(context, 6001, 1, {1}, {route_type=RouteType.OneWay, turn_mode=true, record_mode=RouteRecordMode.Prereach})
 		ScriptLib.SetGadgetStateByConfigId(context,6006, GadgetState.Default)
-		
 		ScriptLib.SetGadgetStateByConfigId(context,6002, GadgetState.Default)
 	else
 		if evt.param2 == 7 and ScriptLib.GetGroupVariableValue(context, "turn") == 1 then
 			ScriptLib.SetGadgetStateByConfigId(context,6002, GadgetState.GearStart)
-			
 			ScriptLib.SetGroupVariableValueByGroup(context, "room3", 0, 220135003)
-			
 			ScriptLib.SetGroupVariableValue(context, "turn", 0)
-			
-			ScriptLib.SetPlatformPointArray(context, 6001, 1, {2}, {route_type=RouteType.OneWay, turn_mode=true, record_mode=RouteRecordMode.Prereach, speed_level=0, arrive_range=0})
-			
+			ScriptLib.SetPlatformPointArray(context, 6001, 1, {2}, {route_type=RouteType.OneWay, turn_mode=true, record_mode=RouteRecordMode.Prereach})
 			if ScriptLib.GetGroupVariableValue(context, "room") == 1 then
 				ScriptLib.SetGadgetStateByConfigId(context,6006, GadgetState.GearStart)
 			end
 		end
 	end
-	
 	return 0
 end
 
@@ -204,11 +195,9 @@ end
 -- 触发操作
 function action_EVENT_GROUP_LOAD_6007(context, evt)
 	if ScriptLib.GetGroupVariableValue(context, "turn") == 0 then
-		ScriptLib.SetPlatformPointArray(context, 6001, 6, {1}, {route_type=RouteType.OneWay, turn_mode=true, record_mode=RouteRecordMode.Reach, speed_level=0, arrive_range=0})
+		ScriptLib.SetPlatformPointArray(context, 6001, 6, {1}, {route_type=RouteType.OneWay, turn_mode=true, record_mode=RouteRecordMode.Reach})
 	end
-	
 	ScriptLib.SetGadgetStateByConfigId(context,6021, GadgetState.Default)
-	
 	return 0
 end
 
@@ -364,7 +353,6 @@ function action_EVENT_GROUP_LOAD_6023(context, evt)
 	else
 		ScriptLib.SetGadgetStateByConfigId(context,6002, GadgetState.GearStart)
 	end
-	
 	return 0
 end
 

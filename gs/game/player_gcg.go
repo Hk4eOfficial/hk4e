@@ -11,63 +11,66 @@ import (
 	pb "google.golang.org/protobuf/proto"
 )
 
-func (g *GameManager) GCGLogin(player *model.Player) {
-	// player.SceneId = 1076
-	// player.Pos.X = 8.974
-	// player.Pos.Y = 0
-	// player.Pos.Z = 9.373
-
+func (g *Game) GCGLogin(player *model.Player) {
 	// GCG目前可能有点问题先不发送
 	// 以后再慢慢搞
 
-	// // GCG基础信息
-	// g.SendMsg(cmd.GCGBasicDataNotify, player.PlayerID, player.ClientSeq, g.PacketGCGBasicDataNotify(player))
-	// // GCG等级挑战解锁
-	// g.SendMsg(cmd.GCGLevelChallengeNotify, player.PlayerID, player.ClientSeq, g.PacketGCGLevelChallengeNotify(player))
-	// // GCG禁止的卡牌
-	// g.SendMsg(cmd.GCGDSBanCardNotify, player.PlayerID, player.ClientSeq, g.PacketGCGDSBanCardNotify(player))
-	// // GCG解锁或拥有的内容
-	// g.SendMsg(cmd.GCGDSDataNotify, player.PlayerID, player.ClientSeq, g.PacketGCGDSDataNotify(player))
-	// // GCG酒馆挑战数据
-	// g.SendMsg(cmd.GCGTCTavernChallengeDataNotify, player.PlayerID, player.ClientSeq, g.PacketGCGTCTavernChallengeDataNotify(player))
+	// GCG基础信息
+	g.SendMsg(cmd.GCGBasicDataNotify, player.PlayerId, player.ClientSeq, g.PacketGCGBasicDataNotify(player))
+	// GCG等级挑战解锁
+	g.SendMsg(cmd.GCGLevelChallengeNotify, player.PlayerId, player.ClientSeq, g.PacketGCGLevelChallengeNotify(player))
+	// GCG禁止的卡牌
+	g.SendMsg(cmd.GCGDSBanCardNotify, player.PlayerId, player.ClientSeq, g.PacketGCGDSBanCardNotify(player))
+	// GCG解锁或拥有的内容
+	g.SendMsg(cmd.GCGDSDataNotify, player.PlayerId, player.ClientSeq, g.PacketGCGDSDataNotify(player))
+	// GCG酒馆挑战数据
+	g.SendMsg(cmd.GCGTCTavernChallengeDataNotify, player.PlayerId, player.ClientSeq, g.PacketGCGTCTavernChallengeDataNotify(player))
 }
 
 // GCGTavernInit GCG酒馆初始化
-func (g *GameManager) GCGTavernInit(player *model.Player) {
-	// if player.SceneId == 1076 {
-	// 	// GCG酒馆信息通知
-	// 	g.SendMsg(cmd.GCGTCTavernInfoNotify, player.PlayerID, player.ClientSeq, g.PacketGCGTCTavernInfoNotify(player))
-	// 	// GCG酒馆NPC信息通知
-	// 	g.SendMsg(cmd.GCGTavernNpcInfoNotify, player.PlayerID, player.ClientSeq, g.PacketGCGTavernNpcInfoNotify(player))
-	// }
+func (g *Game) GCGTavernInit(player *model.Player) {
+	if player.GetSceneId() == 1076 {
+		// GCG酒馆信息通知
+		g.SendMsg(cmd.GCGTCTavernInfoNotify, player.PlayerId, player.ClientSeq, g.PacketGCGTCTavernInfoNotify(player))
+		// GCG酒馆NPC信息通知
+		g.SendMsg(cmd.GCGTavernNpcInfoNotify, player.PlayerId, player.ClientSeq, g.PacketGCGTavernNpcInfoNotify(player))
+	}
 }
 
 // GCGStartChallenge GCG开始挑战
-func (g *GameManager) GCGStartChallenge(player *model.Player) {
+func (g *Game) GCGStartChallenge(player *model.Player) {
 	// GCG开始游戏通知
-	// gcgStartChallengeByCheckRewardRsp := &proto.GCGStartChallengeByCheckRewardRsp{
-	//	ExceededItemTypeList: make([]uint32, 0, 0),
-	//	LevelId:              0,
-	//	ExceededItemList:     make([]uint32, 0, 0),
-	//	LevelType:            proto.GCGLevelType_GCG_LEVEL_TYPE_GUIDE_GROUP,
-	//	ConfigId:             7066505,
-	//	Retcode:              0,
-	// }
-	// g.SendMsg(cmd.GCGStartChallengeByCheckRewardRsp, player.PlayerID, player.ClientSeq, gcgStartChallengeByCheckRewardRsp)
+	gcgStartChallengeByCheckRewardRsp := &proto.GCGStartChallengeByCheckRewardRsp{
+		ExceededItemTypeList: make([]uint32, 0),
+		LevelId:              0,
+		ExceededItemList:     make([]uint32, 0),
+		LevelType:            proto.GCGLevelType_GCG_LEVEL_GUIDE_GROUP,
+		ConfigId:             7066505,
+		Retcode:              0,
+	}
+	g.SendMsg(cmd.GCGStartChallengeByCheckRewardRsp, player.PlayerId, player.ClientSeq, gcgStartChallengeByCheckRewardRsp)
 
 	// 创建GCG游戏
 	game := GCG_MANAGER.CreateGame(30101, []*model.Player{player})
 
 	// GCG游戏简要信息通知
-	GAME_MANAGER.SendMsg(cmd.GCGGameBriefDataNotify, player.PlayerID, player.ClientSeq,
+	g.SendMsg(cmd.GCGGameBriefDataNotify, player.PlayerId, player.ClientSeq,
 		g.PacketGCGGameBriefDataNotify(player, proto.GCGGameBusinessType_GCG_GAME_GUIDE_GROUP, game))
 
 	// 玩家进入GCG界面
-	g.TeleportPlayer(player, uint16(proto.EnterReason_ENTER_REASON_DUNGEON_ENTER), 79999, new(model.Vector), new(model.Vector), 2162)
+	g.TeleportPlayer(
+		player,
+		proto.EnterReason_ENTER_REASON_DUNGEON_ENTER,
+		79999,
+		new(model.Vector),
+		new(model.Vector),
+		2162,
+		0,
+	)
 }
 
 // GCGAskDuelReq GCG决斗请求
-func (g *GameManager) GCGAskDuelReq(player *model.Player, payloadMsg pb.Message) {
+func (g *Game) GCGAskDuelReq(player *model.Player, payloadMsg pb.Message) {
 	// 获取玩家所在的游戏
 	game, ok := GCG_MANAGER.gameMap[player.GCGCurGameGuid]
 	if !ok {
@@ -75,7 +78,7 @@ func (g *GameManager) GCGAskDuelReq(player *model.Player, payloadMsg pb.Message)
 		return
 	}
 	// 获取玩家的操控者对象
-	gameController := game.GetControllerByUserId(player.PlayerID)
+	gameController := game.GetControllerByUserId(player.PlayerId)
 	if gameController == nil {
 		g.SendError(cmd.GCGAskDuelRsp, player, &proto.GCGAskDuelRsp{}, proto.Retcode_RET_GCG_NOT_IN_GCG_DUNGEON)
 		return
@@ -178,7 +181,7 @@ func (g *GameManager) GCGAskDuelReq(player *model.Player, payloadMsg pb.Message)
 		// 如果为玩家则更改为玩家信息
 		if controller.controllerType == ControllerType_Player {
 			gcgControllerShowInfo.ProfilePicture.AvatarId = player.HeadImage
-			gcgControllerShowInfo.ProfilePicture.AvatarId = dbAvatar.AvatarMap[player.HeadImage].Costume
+			gcgControllerShowInfo.ProfilePicture.AvatarId = dbAvatar.GetAvatarById(player.HeadImage).Costume
 		}
 		gcgAskDuelRsp.Duel.ShowInfoList = append(gcgAskDuelRsp.Duel.ShowInfoList)
 	}
@@ -258,11 +261,11 @@ func (g *GameManager) GCGAskDuelReq(player *model.Player, payloadMsg pb.Message)
 	// 	})
 	// }
 
-	GAME_MANAGER.SendMsg(cmd.GCGAskDuelRsp, player.PlayerID, player.ClientSeq, gcgAskDuelRsp)
+	g.SendMsg(cmd.GCGAskDuelRsp, player.PlayerId, player.ClientSeq, gcgAskDuelRsp)
 }
 
 // GCGInitFinishReq GCG初始化完成请求
-func (g *GameManager) GCGInitFinishReq(player *model.Player, payloadMsg pb.Message) {
+func (g *Game) GCGInitFinishReq(player *model.Player, payloadMsg pb.Message) {
 	// 获取玩家所在的游戏
 	game, ok := GCG_MANAGER.gameMap[player.GCGCurGameGuid]
 	if !ok {
@@ -270,7 +273,7 @@ func (g *GameManager) GCGInitFinishReq(player *model.Player, payloadMsg pb.Messa
 		return
 	}
 	// 获取玩家的操控者对象
-	gameController := game.GetControllerByUserId(player.PlayerID)
+	gameController := game.GetControllerByUserId(player.PlayerId)
 	if gameController == nil {
 		g.SendError(cmd.GCGInitFinishRsp, player, &proto.GCGInitFinishRsp{}, proto.Retcode_RET_GCG_NOT_IN_GCG_DUNGEON)
 		return
@@ -279,14 +282,14 @@ func (g *GameManager) GCGInitFinishReq(player *model.Player, payloadMsg pb.Messa
 	// 更改操控者加载状态
 	gameController.loadState = ControllerLoadState_InitFinish
 
-	GAME_MANAGER.SendMsg(cmd.GCGInitFinishRsp, player.PlayerID, player.ClientSeq, &proto.GCGInitFinishRsp{})
+	g.SendMsg(cmd.GCGInitFinishRsp, player.PlayerId, player.ClientSeq, &proto.GCGInitFinishRsp{})
 
 	// 检查所有玩家是否已加载完毕
 	game.CheckAllInitFinish()
 }
 
 // GCGOperationReq GCG游戏客户端操作请求
-func (g *GameManager) GCGOperationReq(player *model.Player, payloadMsg pb.Message) {
+func (g *Game) GCGOperationReq(player *model.Player, payloadMsg pb.Message) {
 	req := payloadMsg.(*proto.GCGOperationReq)
 
 	// 获取玩家所在的游戏
@@ -296,7 +299,7 @@ func (g *GameManager) GCGOperationReq(player *model.Player, payloadMsg pb.Messag
 		return
 	}
 	// 获取玩家的操控者对象
-	gameController := game.GetControllerByUserId(player.PlayerID)
+	gameController := game.GetControllerByUserId(player.PlayerId)
 	if gameController == nil {
 		g.SendError(cmd.GCGOperationRsp, player, &proto.GCGOperationRsp{}, proto.Retcode_RET_GCG_NOT_IN_GCG_DUNGEON)
 		return
@@ -309,7 +312,7 @@ func (g *GameManager) GCGOperationReq(player *model.Player, payloadMsg pb.Messag
 		// 操作者是否拥有该卡牌
 		cardInfo := gameController.GetCharCardByGuid(op.CardGuid)
 		if cardInfo == nil {
-			GAME_MANAGER.SendError(cmd.GCGOperationRsp, player, &proto.GCGOperationRsp{}, proto.Retcode_RET_GCG_SELECT_HAND_CARD_GUID_ERROR)
+			g.SendError(cmd.GCGOperationRsp, player, &proto.GCGOperationRsp{}, proto.Retcode_RET_GCG_SELECT_HAND_CARD_GUID_ERROR)
 			return
 		}
 		// 操控者选择角色牌
@@ -356,11 +359,11 @@ func (g *GameManager) GCGOperationReq(player *model.Player, payloadMsg pb.Messag
 	gcgOperationRsp := &proto.GCGOperationRsp{
 		OpSeq: req.OpSeq,
 	}
-	GAME_MANAGER.SendMsg(cmd.GCGOperationRsp, player.PlayerID, player.ClientSeq, gcgOperationRsp)
+	g.SendMsg(cmd.GCGOperationRsp, player.PlayerId, player.ClientSeq, gcgOperationRsp)
 }
 
 // PacketGCGSkillPreviewNotify GCG游戏技能预览通知
-func (g *GameManager) PacketGCGSkillPreviewNotify(game *GCGGame, controller *GCGController) *proto.GCGSkillPreviewNotify {
+func (g *Game) PacketGCGSkillPreviewNotify(game *GCGGame, controller *GCGController) *proto.GCGSkillPreviewNotify {
 	selectedCharCard := controller.GetSelectedCharCard()
 	// 确保玩家选择了角色牌
 	if selectedCharCard == nil {
@@ -449,7 +452,7 @@ func (g *GameManager) PacketGCGSkillPreviewNotify(game *GCGGame, controller *GCG
 }
 
 // SendGCGMessagePackNotify 发送GCG游戏消息包通知
-func (g *GameManager) SendGCGMessagePackNotify(controller *GCGController, serverSeq uint32, msgPackList []*proto.GCGMessagePack) {
+func (g *Game) SendGCGMessagePackNotify(controller *GCGController, serverSeq uint32, msgPackList []*proto.GCGMessagePack) {
 	// 确保加载完成
 	if controller.loadState != ControllerLoadState_InitFinish {
 		return
@@ -462,7 +465,7 @@ func (g *GameManager) SendGCGMessagePackNotify(controller *GCGController, server
 	// 根据操控者的类型发送消息包
 	switch controller.controllerType {
 	case ControllerType_Player:
-		GAME_MANAGER.SendMsg(cmd.GCGMessagePackNotify, controller.player.PlayerID, controller.player.ClientSeq, gcgMessagePackNotify)
+		g.SendMsg(cmd.GCGMessagePackNotify, controller.player.PlayerId, controller.player.ClientSeq, gcgMessagePackNotify)
 	case ControllerType_AI:
 		controller.ai.ReceiveGCGMessagePackNotify(gcgMessagePackNotify)
 	default:
@@ -472,7 +475,7 @@ func (g *GameManager) SendGCGMessagePackNotify(controller *GCGController, server
 }
 
 // PacketGCGGameBriefDataNotify GCG游戏简要数据通知
-func (g *GameManager) PacketGCGGameBriefDataNotify(player *model.Player, businessType proto.GCGGameBusinessType, game *GCGGame) *proto.GCGGameBriefDataNotify {
+func (g *Game) PacketGCGGameBriefDataNotify(player *model.Player, businessType proto.GCGGameBusinessType, game *GCGGame) *proto.GCGGameBriefDataNotify {
 	gcgGameBriefDataNotify := &proto.GCGGameBriefDataNotify{
 		GcgBriefData: &proto.GCGGameBriefData{
 			BusinessType: businessType,
@@ -496,9 +499,9 @@ func (g *GameManager) PacketGCGGameBriefDataNotify(player *model.Player, busines
 		}
 		// 玩家信息
 		if controller.player != nil {
-			gcgPlayerBriefData.Uid = player.PlayerID
+			gcgPlayerBriefData.Uid = player.PlayerId
 			gcgPlayerBriefData.ProfilePicture.AvatarId = dbTeam.GetActiveAvatarId()
-			gcgPlayerBriefData.ProfilePicture.CostumeId = dbAvatar.AvatarMap[dbTeam.GetActiveAvatarId()].Costume
+			gcgPlayerBriefData.ProfilePicture.CostumeId = dbAvatar.GetAvatarById(dbTeam.GetActiveAvatarId()).Costume
 			gcgPlayerBriefData.NickName = player.NickName
 		}
 		gcgGameBriefDataNotify.GcgBriefData.PlayerBriefList = append(gcgGameBriefDataNotify.GcgBriefData.PlayerBriefList)
@@ -507,7 +510,7 @@ func (g *GameManager) PacketGCGGameBriefDataNotify(player *model.Player, busines
 }
 
 // PacketGCGTavernNpcInfoNotify GCG酒馆NPC信息通知
-func (g *GameManager) PacketGCGTavernNpcInfoNotify(player *model.Player) *proto.GCGTavernNpcInfoNotify {
+func (g *Game) PacketGCGTavernNpcInfoNotify(player *model.Player) *proto.GCGTavernNpcInfoNotify {
 	gcgTavernNpcInfoNotify := &proto.GCGTavernNpcInfoNotify{
 		WeekNpcList:  make([]*proto.GCGTavernNpcInfo, 0, 0),
 		ConstNpcList: make([]*proto.GCGTavernNpcInfo, 0, 0),
@@ -521,7 +524,7 @@ func (g *GameManager) PacketGCGTavernNpcInfoNotify(player *model.Player) *proto.
 }
 
 // PacketGCGTCTavernInfoNotify GCG酒馆信息通知
-func (g *GameManager) PacketGCGTCTavernInfoNotify(player *model.Player) *proto.GCGTCTavernInfoNotify {
+func (g *Game) PacketGCGTCTavernInfoNotify(player *model.Player) *proto.GCGTCTavernInfoNotify {
 	gcgTCTavernInfoNotify := &proto.GCGTCTavernInfoNotify{
 		LevelId:       0,
 		IsLastDuelWin: false,
@@ -535,7 +538,7 @@ func (g *GameManager) PacketGCGTCTavernInfoNotify(player *model.Player) *proto.G
 }
 
 // PacketGCGTCTavernChallengeDataNotify GCG酒馆挑战数据
-func (g *GameManager) PacketGCGTCTavernChallengeDataNotify(player *model.Player) *proto.GCGTCTavernChallengeDataNotify {
+func (g *Game) PacketGCGTCTavernChallengeDataNotify(player *model.Player) *proto.GCGTCTavernChallengeDataNotify {
 	gcgTCTavernChallengeDataNotify := &proto.GCGTCTavernChallengeDataNotify{
 		TavernChallengeList: make([]*proto.GCGTCTavernChallengeData, 0, 0),
 	}
@@ -550,7 +553,7 @@ func (g *GameManager) PacketGCGTCTavernChallengeDataNotify(player *model.Player)
 }
 
 // PacketGCGBasicDataNotify GCG基础数据通知
-func (g *GameManager) PacketGCGBasicDataNotify(player *model.Player) *proto.GCGBasicDataNotify {
+func (g *Game) PacketGCGBasicDataNotify(player *model.Player) *proto.GCGBasicDataNotify {
 	gcgBasicDataNotify := &proto.GCGBasicDataNotify{
 		Level:                player.GCGInfo.Level,
 		Exp:                  player.GCGInfo.Exp,
@@ -560,7 +563,7 @@ func (g *GameManager) PacketGCGBasicDataNotify(player *model.Player) *proto.GCGB
 }
 
 // PacketGCGLevelChallengeNotify GCG等级挑战通知
-func (g *GameManager) PacketGCGLevelChallengeNotify(player *model.Player) *proto.GCGLevelChallengeNotify {
+func (g *Game) PacketGCGLevelChallengeNotify(player *model.Player) *proto.GCGLevelChallengeNotify {
 	gcgLevelChallengeNotify := &proto.GCGLevelChallengeNotify{
 		UnlockBossChallengeList:  make([]*proto.GCGBossChallengeData, 0, 0),
 		UnlockWorldChallengeList: player.GCGInfo.UnlockWorldChallengeList,
@@ -586,7 +589,7 @@ func (g *GameManager) PacketGCGLevelChallengeNotify(player *model.Player) *proto
 }
 
 // PacketGCGDSBanCardNotify GCG禁止的卡牌通知
-func (g *GameManager) PacketGCGDSBanCardNotify(player *model.Player) *proto.GCGDSBanCardNotify {
+func (g *Game) PacketGCGDSBanCardNotify(player *model.Player) *proto.GCGDSBanCardNotify {
 	gcgDSBanCardNotify := &proto.GCGDSBanCardNotify{
 		CardList: player.GCGInfo.BanCardList,
 	}
@@ -594,7 +597,7 @@ func (g *GameManager) PacketGCGDSBanCardNotify(player *model.Player) *proto.GCGD
 }
 
 // PacketGCGDSDataNotify GCG数据通知
-func (g *GameManager) PacketGCGDSDataNotify(player *model.Player) *proto.GCGDSDataNotify {
+func (g *Game) PacketGCGDSDataNotify(player *model.Player) *proto.GCGDSDataNotify {
 	gcgDSDataNotify := &proto.GCGDSDataNotify{
 		CurDeckId:            player.GCGInfo.CurDeckId,
 		DeckList:             make([]*proto.GCGDSDeckData, 0, len(player.GCGInfo.DeckList)),

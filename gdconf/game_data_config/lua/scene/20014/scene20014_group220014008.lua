@@ -97,28 +97,28 @@ end
 
 -- 触发操作
 function action_EVENT_ANY_MONSTER_DIE_19(context, evt)
-	-- 创建id为50的gadget
+	-- 创生gadget 50
 	if 0 ~= ScriptLib.CreateGadget(context, { config_id = 50 }) then
-	  ScriptLib.PrintContextLog(context, "@@ LUA_WARNING : create_gadget")
-	  return -1
+	  ScriptLib.PrintContextLog(context, "@@ LUA_WARNING : dungeon_settle")
+		return -1
 	end
 	
-	-- 创建id为51的gadget
+	-- 创生gadget 51
 	if 0 ~= ScriptLib.CreateGadget(context, { config_id = 51 }) then
-	  ScriptLib.PrintContextLog(context, "@@ LUA_WARNING : create_gadget")
-	  return -1
+	  ScriptLib.PrintContextLog(context, "@@ LUA_WARNING : dungeon_settle")
+		return -1
 	end
 	
-	-- 创建id为52的gadget
+	-- 创生gadget 52
 	if 0 ~= ScriptLib.CreateGadget(context, { config_id = 52 }) then
-	  ScriptLib.PrintContextLog(context, "@@ LUA_WARNING : create_gadget")
-	  return -1
+	  ScriptLib.PrintContextLog(context, "@@ LUA_WARNING : dungeon_settle")
+		return -1
 	end
 	
-	-- 创建id为53的gadget
+	-- 创生gadget 53
 	if 0 ~= ScriptLib.CreateGadget(context, { config_id = 53 }) then
-	  ScriptLib.PrintContextLog(context, "@@ LUA_WARNING : create_gadget")
-	  return -1
+	  ScriptLib.PrintContextLog(context, "@@ LUA_WARNING : dungeon_settle")
+		return -1
 	end
 	
 	return 0

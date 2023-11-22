@@ -1,0 +1,11 @@
+[hk4e]
+game_data_config_path = "./game_data_config" # 配置表路径
+
+[logger]
+level = "DEBUG"
+mode = "CONSOLE"
+track = true
+max_size = 10485760
+
+[mq]
+nats_url = "nats://nats:4222"

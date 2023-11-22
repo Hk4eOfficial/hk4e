@@ -168,7 +168,6 @@ function action_EVENT_GADGET_STATE_CHANGE_13006(context, evt)
 	if ScriptLib.GetGadgetStateByConfigId(context, 0, 13002) == 201 and ScriptLib.GetGadgetStateByConfigId(context, 0, 13005) == 201 and ScriptLib.GetGadgetStateByConfigId(context, 0, 13008) == 201 then
 		ScriptLib.SetGadgetStateByConfigId(context,13004, GadgetState.GearStart)
 	end
-	
 	return 0
 end
 
@@ -315,15 +314,12 @@ function action_EVENT_QUEST_START_13020(context, evt)
 	if ScriptLib.GetGadgetStateByConfigId(context, 0, 13002) == 201 then
 		ScriptLib.AddQuestProgress(context, "4006521")
 	end
-	
 	if ScriptLib.GetGadgetStateByConfigId(context, 0, 13005) == 201 then
 		ScriptLib.AddQuestProgress(context, "4006508")
 	end
-	
 	if ScriptLib.GetGadgetStateByConfigId(context, 0, 13008) == 201 then
 		ScriptLib.AddQuestProgress(context, "4006520")
 	end
-	
 	return 0
 end
 
@@ -332,15 +328,12 @@ function action_EVENT_QUEST_START_13021(context, evt)
 	if ScriptLib.GetGadgetStateByConfigId(context, 0, 13002) == 201 then
 		ScriptLib.AddQuestProgress(context, "4006521")
 	end
-	
 	if ScriptLib.GetGadgetStateByConfigId(context, 0, 13005) == 201 then
 		ScriptLib.AddQuestProgress(context, "4006508")
 	end
-	
 	if ScriptLib.GetGadgetStateByConfigId(context, 0, 13008) == 201 then
 		ScriptLib.AddQuestProgress(context, "4006520")
 	end
-	
 	return 0
 end
 
@@ -349,15 +342,12 @@ function action_EVENT_QUEST_START_13022(context, evt)
 	if ScriptLib.GetGadgetStateByConfigId(context, 0, 13002) == 201 then
 		ScriptLib.AddQuestProgress(context, "4006521")
 	end
-	
 	if ScriptLib.GetGadgetStateByConfigId(context, 0, 13005) == 201 then
 		ScriptLib.AddQuestProgress(context, "4006508")
 	end
-	
 	if ScriptLib.GetGadgetStateByConfigId(context, 0, 13008) == 201 then
 		ScriptLib.AddQuestProgress(context, "4006520")
 	end
-	
 	return 0
 end
 

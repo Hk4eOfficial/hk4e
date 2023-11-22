@@ -20,19 +20,19 @@ type Dao struct {
 	redisCluster *redis.ClusterClient
 }
 
-func NewDao() (r *Dao) {
-	r = new(Dao)
+func NewDao() (*Dao, error) {
+	r := new(Dao)
 
 	clientOptions := options.Client().ApplyURI(config.GetConfig().Database.Url).SetMinPoolSize(10).SetMaxPoolSize(100)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		logger.Error("mongo connect error: %v", err)
-		return nil
+		return nil, err
 	}
 	err = client.Ping(context.TODO(), readpref.Primary())
 	if err != nil {
 		logger.Error("mongo ping error: %v", err)
-		return nil
+		return nil, err
 	}
 	r.mongo = client
 	r.db = client.Database("dispatch_hk4e")
@@ -64,10 +64,10 @@ func NewDao() (r *Dao) {
 	}
 	if err != nil {
 		logger.Error("redis ping error: %v", err)
-		return nil
+		return nil, err
 	}
 
-	return r
+	return r, nil
 }
 
 func (d *Dao) CloseDao() {

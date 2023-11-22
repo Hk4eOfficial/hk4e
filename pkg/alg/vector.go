@@ -1,5 +1,9 @@
 package alg
 
+import (
+	"math"
+)
+
 // Vector2 二维向量
 type Vector2 struct {
 	X float32
@@ -11,6 +15,16 @@ type Vector3 struct {
 	X float32
 	Y float32
 	Z float32
+}
+
+// Vector2Magnitude 二维向量模长
+func Vector2Magnitude(v *Vector2) float32 {
+	return float32(math.Sqrt(float64(v.X*v.X + v.Z*v.Z)))
+}
+
+// Vector3Magnitude 三维向量模长
+func Vector3Magnitude(v *Vector3) float32 {
+	return float32(math.Sqrt(float64(v.X*v.X + v.Y*v.Y + v.Z*v.Z)))
 }
 
 // Vector2Add 二维向量加
@@ -64,4 +78,11 @@ func Vector3CrossProd(v1 *Vector3, v2 *Vector3) *Vector3 {
 	v3.Y = v2.X*v1.Z - v2.Z*v1.X
 	v3.Z = v1.X*v2.Y - v2.X*v1.Y
 	return v3
+}
+
+// MeshVector 网格向量
+type MeshVector struct {
+	X int16
+	Y int16
+	Z int16
 }

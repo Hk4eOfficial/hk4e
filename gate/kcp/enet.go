@@ -7,26 +7,28 @@ import (
 	"errors"
 )
 
-// 原神Enet连接控制协议
-// MM MM MM MM | LL LL LL LL | HH HH HH HH | EE EE EE EE | MM MM MM MM
+// Enet连接控制协议
+// MM MM MM MM | SS SS SS SS | CC CC CC CC | EE EE EE EE | MM MM MM MM
 // MM为表示连接状态的幻数 在开头的4字节和结尾的4字节
-// LL和HH分别为convId的低4字节和高4字节
+// SS为sessionId 4字节
+// CC为conv 4字节
 // EE为Enet事件类型 4字节
 
-// Enet协议上报结构体
+// Enet Enet协议上报结构体
 type Enet struct {
-	Addr     string
-	ConvId   uint64
-	ConnType uint8
-	EnetType uint32
+	Addr      string
+	SessionId uint32
+	Conv      uint32
+	ConnType  string
+	EnetType  uint32
 }
 
 // Enet连接状态类型
 const (
-	ConnEnetSyn        = 1
-	ConnEnetEst        = 2
-	ConnEnetFin        = 3
-	ConnEnetAddrChange = 4
+	ConnEnetSyn        = "ConnEnetSyn"
+	ConnEnetEst        = "ConnEnetEst"
+	ConnEnetFin        = "ConnEnetFin"
+	ConnEnetAddrChange = "ConnEnetAddrChange"
 )
 
 // Enet连接状态类型幻数
@@ -50,15 +52,21 @@ const (
 	EnetLoginUnfinished        = 8
 	EnetPacketFreqTooHigh      = 9
 	EnetPingTimeout            = 10
-	EnetTranferFailed          = 11
+	EnetTransferFailed         = 11
 	EnetServerKillClient       = 12
 	EnetCheckMoveSpeed         = 13
 	EnetAccountPasswordChange  = 14
+	EnetSecurityKick           = 15
+	EnetLuaShellTimeout        = 16
+	EnetSDKFailKick            = 17
+	EnetPacketCostTime         = 18
+	EnetPacketUnionFreq        = 19
+	EnetWaitSndMax             = 20
 	EnetClientEditorConnectKey = 987654321
 	EnetClientConnectKey       = 1234567890
 )
 
-func BuildEnet(connType uint8, enetType uint32, conv uint64) []byte {
+func BuildEnet(connType string, enetType uint32, sessionId uint32, conv uint32) []byte {
 	data := make([]byte, 20)
 	if connType == ConnEnetSyn {
 		copy(data[0:4], MagicEnetSynHead)
@@ -72,35 +80,16 @@ func BuildEnet(connType uint8, enetType uint32, conv uint64) []byte {
 	} else {
 		return nil
 	}
-	// conv的高四个字节和低四个字节分开
-	// 例如 00 00 01 45 | LL LL LL LL | HH HH HH HH | 49 96 02 d2 | 14 51 45 45
-	data[4] = uint8(conv >> 24)
-	data[5] = uint8(conv >> 16)
-	data[6] = uint8(conv >> 8)
-	data[7] = uint8(conv >> 0)
-	data[8] = uint8(conv >> 56)
-	data[9] = uint8(conv >> 48)
-	data[10] = uint8(conv >> 40)
-	data[11] = uint8(conv >> 32)
-	// Enet
-	data[12] = uint8(enetType >> 24)
-	data[13] = uint8(enetType >> 16)
-	data[14] = uint8(enetType >> 8)
-	data[15] = uint8(enetType >> 0)
+	binary.BigEndian.PutUint32(data[4:8], sessionId)
+	binary.BigEndian.PutUint32(data[8:12], conv)
+	binary.BigEndian.PutUint32(data[12:16], enetType)
 	return data
 }
 
-func ParseEnet(data []byte) (connType uint8, enetType uint32, conv uint64, err error) {
-	// 提取convId
-	conv = uint64(0)
-	conv += uint64(data[4]) << 24
-	conv += uint64(data[5]) << 16
-	conv += uint64(data[6]) << 8
-	conv += uint64(data[7]) << 0
-	conv += uint64(data[8]) << 56
-	conv += uint64(data[9]) << 48
-	conv += uint64(data[10]) << 40
-	conv += uint64(data[11]) << 32
+func ParseEnet(data []byte) (connType string, enetType uint32, sessionId uint32, conv uint32, rawConv uint64, err error) {
+	sessionId = binary.BigEndian.Uint32(data[4:8])
+	conv = binary.BigEndian.Uint32(data[8:12])
+	rawConv = binary.LittleEndian.Uint64(data[4:12])
 	// 提取Enet协议头部和尾部幻数
 	udpPayloadEnetHead := data[:4]
 	udpPayloadEnetTail := data[len(data)-4:]
@@ -114,21 +103,21 @@ func ParseEnet(data []byte) (connType uint8, enetType uint32, conv uint64, err e
 	if equalHead && equalTail {
 		// 客户端前置握手获取conv
 		connType = ConnEnetSyn
-		return connType, enetType, conv, nil
+		return connType, enetType, sessionId, conv, rawConv, nil
 	}
 	equalHead = bytes.Equal(udpPayloadEnetHead, MagicEnetEstHead)
 	equalTail = bytes.Equal(udpPayloadEnetTail, MagicEnetEstTail)
 	if equalHead && equalTail {
 		// 连接建立
 		connType = ConnEnetEst
-		return connType, enetType, conv, nil
+		return connType, enetType, sessionId, conv, rawConv, nil
 	}
 	equalHead = bytes.Equal(udpPayloadEnetHead, MagicEnetFinHead)
 	equalTail = bytes.Equal(udpPayloadEnetTail, MagicEnetFinTail)
 	if equalHead && equalTail {
 		// 连接断开
 		connType = ConnEnetFin
-		return connType, enetType, conv, nil
+		return connType, enetType, sessionId, conv, rawConv, nil
 	}
-	return 0, 0, 0, errors.New("unknown conn type")
+	return "", 0, 0, 0, 0, errors.New("unknown conn type")
 }

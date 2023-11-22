@@ -10,27 +10,18 @@ package kcp
 import (
 	"crypto/rand"
 	"encoding/binary"
+	"errors"
 	"io"
 	"net"
 	"sync"
 	"sync/atomic"
 	"time"
 
-	"github.com/pkg/errors"
 	"golang.org/x/net/ipv4"
 	"golang.org/x/net/ipv6"
 )
 
 const (
-	// 16-bytes nonce for each packet
-	nonceSize = 16
-
-	// 4-bytes packet checksum
-	crcSize = 4
-
-	// overall crypto header size
-	cryptHeaderSize = nonceSize + crcSize
-
 	// maximum packet size
 	mtuLimit = 1500
 
@@ -156,7 +147,7 @@ func newUDPSession(conv uint64, l *Listener, conn net.PacketConn, ownConn bool, 
 	sess.kcp.ReserveBytes(sess.headerSize)
 
 	if sess.l == nil { // it's a client connection
-		go sess.readLoop()
+		go sess.rx()
 		atomic.AddUint64(&DefaultSnmp.ActiveOpens, 1)
 	} else {
 		atomic.AddUint64(&DefaultSnmp.PassiveOpens, 1)
@@ -215,7 +206,7 @@ func (s *UDPSession) Read(b []byte) (n int, err error) {
 		if !s.rd.IsZero() {
 			if time.Now().After(s.rd) {
 				s.mu.Unlock()
-				return 0, errors.WithStack(errTimeout)
+				return 0, errTimeout
 			}
 
 			delay := time.Until(s.rd)
@@ -231,13 +222,17 @@ func (s *UDPSession) Read(b []byte) (n int, err error) {
 				timeout.Stop()
 			}
 		case <-c:
-			return 0, errors.WithStack(errTimeout)
+			return 0, errTimeout
 		case <-s.chSocketReadError:
 			return 0, s.socketReadError.Load().(error)
 		case <-s.die:
-			return 0, errors.WithStack(io.ErrClosedPipe)
+			return 0, io.ErrClosedPipe
 		}
 	}
+}
+
+func (s *UDPSession) GetMaxPayloadLen() int {
+	return 256 * int(s.kcp.mss)
 }
 
 // Write implements net.Conn
@@ -248,10 +243,6 @@ func (s *UDPSession) Write(b []byte) (n int, err error) {
 	return s.WriteBuffers([][]byte{b})
 }
 
-func (s *UDPSession) GetMaxPayloadLen() int {
-	return 256 * int(s.kcp.mss)
-}
-
 // WriteBuffers write a vector of byte slices to the underlying connection
 func (s *UDPSession) WriteBuffers(v [][]byte) (n int, err error) {
 	for {
@@ -259,7 +250,7 @@ func (s *UDPSession) WriteBuffers(v [][]byte) (n int, err error) {
 		case <-s.chSocketWriteError:
 			return 0, s.socketWriteError.Load().(error)
 		case <-s.die:
-			return 0, errors.WithStack(io.ErrClosedPipe)
+			return 0, io.ErrClosedPipe
 		default:
 		}
 
@@ -270,7 +261,7 @@ func (s *UDPSession) WriteBuffers(v [][]byte) (n int, err error) {
 		if waitsnd < int(s.kcp.snd_wnd) && waitsnd < int(s.kcp.rmt_wnd) {
 			for _, b := range v {
 				n += len(b)
-				// 原神KCP是消息模式 上层不要对消息进行分割 并且保证消息长度小于256*mss
+				// KCP消息模式 上层不要对消息进行分割 并且保证消息长度小于256*mss
 				// for {
 				//	if len(b) <= int(s.kcp.mss) {
 				//		s.kcp.Send(b)
@@ -298,7 +289,7 @@ func (s *UDPSession) WriteBuffers(v [][]byte) (n int, err error) {
 		if !s.wd.IsZero() {
 			if time.Now().After(s.wd) {
 				s.mu.Unlock()
-				return 0, errors.WithStack(errTimeout)
+				return 0, errTimeout
 			}
 			delay := time.Until(s.wd)
 			timeout = time.NewTimer(delay)
@@ -312,11 +303,11 @@ func (s *UDPSession) WriteBuffers(v [][]byte) (n int, err error) {
 				timeout.Stop()
 			}
 		case <-c:
-			return 0, errors.WithStack(errTimeout)
+			return 0, errTimeout
 		case <-s.chSocketWriteError:
 			return 0, s.socketWriteError.Load().(error)
 		case <-s.die:
-			return 0, errors.WithStack(io.ErrClosedPipe)
+			return 0, io.ErrClosedPipe
 		}
 	}
 }
@@ -343,8 +334,6 @@ func (s *UDPSession) Close() error {
 	})
 
 	if once {
-		atomic.AddUint64(&DefaultSnmp.CurrEstab, ^uint64(0))
-
 		// try best to send all queued messages
 		s.mu.Lock()
 		s.kcp.flush(false)
@@ -362,7 +351,7 @@ func (s *UDPSession) Close() error {
 			return nil
 		}
 	} else {
-		return errors.WithStack(io.ErrClosedPipe)
+		return io.ErrClosedPipe
 	}
 }
 
@@ -566,8 +555,25 @@ func (s *UDPSession) update() {
 	}
 }
 
-// GetConv gets conversation id of a session
-func (s *UDPSession) GetConv() uint64 { return s.kcp.conv }
+// GetRawConv gets conversation id of a session
+// 获取KCP组合会话id
+func (s *UDPSession) GetRawConv() uint64 {
+	return s.kcp.conv
+}
+
+// GetSessionId 获取会话id
+func (s *UDPSession) GetSessionId() uint32 {
+	rawConvData := make([]byte, 8)
+	binary.LittleEndian.PutUint64(rawConvData, s.kcp.conv)
+	return binary.LittleEndian.Uint32(rawConvData[0:4])
+}
+
+// GetConv 获取KCP会话id
+func (s *UDPSession) GetConv() uint32 {
+	rawConvData := make([]byte, 8)
+	binary.LittleEndian.PutUint64(rawConvData, s.kcp.conv)
+	return binary.LittleEndian.Uint32(rawConvData[4:8])
+}
 
 // GetRTO gets current rto of the session
 func (s *UDPSession) GetRTO() uint32 {
@@ -583,7 +589,7 @@ func (s *UDPSession) GetSRTT() int32 {
 	return s.kcp.rx_srtt
 }
 
-// GetRTTVar gets current rtt variance of the session
+// GetSRTTVar gets current rtt variance of the session
 func (s *UDPSession) GetSRTTVar() int32 {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -670,15 +676,22 @@ type (
 
 		rd atomic.Value // read deadline for Accept()
 
-		EnetNotify chan *Enet // 原神Enet协议上报管道
+		xconn           batchConn // for x/net
+		xconnWriteError error
+
+		enetNotifyChan chan *Enet // Enet事件上报管道
 	}
 )
 
+func (l *Listener) GetEnetNotifyChan() chan *Enet {
+	return l.enetNotifyChan
+}
+
 // packet input stage
-func (l *Listener) packetInput(data []byte, addr net.Addr, convId uint64) {
+func (l *Listener) packetInput(data []byte, addr net.Addr, rawConv uint64) {
 	if len(data) >= IKCP_OVERHEAD {
 		l.sessionLock.RLock()
-		s, ok := l.sessions[convId]
+		s, ok := l.sessions[rawConv]
 		l.sessionLock.RUnlock()
 
 		var conv uint64
@@ -695,7 +708,7 @@ func (l *Listener) packetInput(data []byte, addr net.Addr, convId uint64) {
 				s.kcpInput(data)
 			} else if sn == 0 { // should replace current connection
 				// 网络切换会话保持改造后 这里的逻辑可能永远也执行不到了
-				s.Close()
+				_ = s.Close()
 				s = nil
 			}
 		}
@@ -705,7 +718,7 @@ func (l *Listener) packetInput(data []byte, addr net.Addr, convId uint64) {
 				s := newUDPSession(conv, l, l.conn, false, addr)
 				s.kcpInput(data)
 				l.sessionLock.Lock()
-				l.sessions[convId] = s
+				l.sessions[rawConv] = s
 				l.sessionLock.Unlock()
 				l.chAccepts <- s
 			}
@@ -783,20 +796,20 @@ func (l *Listener) AcceptKCP() (*UDPSession, error) {
 
 	select {
 	case <-timeout:
-		return nil, errors.WithStack(errTimeout)
+		return nil, errTimeout
 	case c := <-l.chAccepts:
 		return c, nil
 	case <-l.chSocketReadError:
 		return nil, l.socketReadError.Load().(error)
 	case <-l.die:
-		return nil, errors.WithStack(io.ErrClosedPipe)
+		return nil, io.ErrClosedPipe
 	}
 }
 
 // SetDeadline sets the deadline associated with the listener. A zero time value disables the deadline.
 func (l *Listener) SetDeadline(t time.Time) error {
-	l.SetReadDeadline(t)
-	l.SetWriteDeadline(t)
+	_ = l.SetReadDeadline(t)
+	_ = l.SetWriteDeadline(t)
 	return nil
 }
 
@@ -823,17 +836,17 @@ func (l *Listener) Close() error {
 			err = l.conn.Close()
 		}
 	} else {
-		err = errors.WithStack(io.ErrClosedPipe)
+		err = io.ErrClosedPipe
 	}
 	return err
 }
 
 // closeSession notify the listener that a session has closed
-func (l *Listener) closeSession(convId uint64) (ret bool) {
+func (l *Listener) closeSession(conv uint64) (ret bool) {
 	l.sessionLock.Lock()
 	defer l.sessionLock.Unlock()
-	if _, ok := l.sessions[convId]; ok {
-		delete(l.sessions, convId)
+	if _, ok := l.sessions[conv]; ok {
+		delete(l.sessions, conv)
 		return true
 	}
 	return false
@@ -855,11 +868,11 @@ func Listen(laddr string) (net.Listener, error) { return ListenWithOptions(laddr
 func ListenWithOptions(laddr string) (*Listener, error) {
 	udpaddr, err := net.ResolveUDPAddr("udp", laddr)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 	conn, err := net.ListenUDP("udp", udpaddr)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 
 	return serveConn(conn, true)
@@ -879,8 +892,20 @@ func serveConn(conn net.PacketConn, ownConn bool) (*Listener, error) {
 	l.chSessionClosed = make(chan net.Addr)
 	l.die = make(chan struct{})
 	l.chSocketReadError = make(chan struct{})
-	l.EnetNotify = make(chan *Enet, 1000)
-	go l.monitor()
+	l.enetNotifyChan = make(chan *Enet, 1000)
+
+	if _, ok := l.conn.(*net.UDPConn); ok {
+		addr, err := net.ResolveUDPAddr("udp", l.conn.LocalAddr().String())
+		if err == nil {
+			if addr.IP.To4() != nil {
+				l.xconn = ipv4.NewPacketConn(l.conn)
+			} else {
+				l.xconn = ipv6.NewPacketConn(l.conn)
+			}
+		}
+	}
+
+	go l.rx()
 	return l, nil
 }
 
@@ -898,49 +923,57 @@ func DialWithOptions(raddr string) (*UDPSession, error) {
 	// network type detection
 	udpaddr, err := net.ResolveUDPAddr("udp", raddr)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 	network := "udp4"
 	if udpaddr.IP.To4() == nil {
 		network = "udp"
 	}
 
-	conn, err := net.ListenUDP(network, nil)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	hsconn, err := net.DialUDP(network, nil, udpaddr)
+	conn, err := net.DialUDP(network, nil, udpaddr)
 	if err != nil {
 		return nil, err
 	}
 	enet := &Enet{
-		Addr:     raddr,
-		ConvId:   0,
-		ConnType: ConnEnetSyn,
-		EnetType: EnetClientConnectKey,
+		Addr:      udpaddr.String(),
+		SessionId: 0,
+		Conv:      0,
+		ConnType:  ConnEnetSyn,
+		EnetType:  EnetClientConnectKey,
 	}
-	data := BuildEnet(enet.ConnType, enet.EnetType, enet.ConvId)
-	_, err = hsconn.Write(data)
+	data := BuildEnet(enet.ConnType, enet.EnetType, enet.SessionId, enet.Conv)
+	_, err = conn.Write(data)
 	if err != nil {
 		return nil, err
 	}
 	buf := make([]byte, mtuLimit)
-	n, addr, err := hsconn.ReadFrom(buf)
+	err = conn.SetReadDeadline(time.Now().Add(time.Second * 10))
 	if err != nil {
 		return nil, err
 	}
-	if addr.String() != raddr {
-		// TODO 本质是为了安全考虑 但是用域名连接会出现这种情况看之后找个方法解决一下
-		// return nil, errors.New("recv packet remote addr not match")
+	n, addr, err := conn.ReadFrom(buf)
+	if err != nil {
+		return nil, err
+	}
+	err = conn.SetReadDeadline(time.Time{})
+	if err != nil {
+		return nil, err
+	}
+	if addr.String() != udpaddr.String() {
+		return nil, errors.New("recv packet remote addr not match")
 	}
 	udpPayload := buf[:n]
-	connType, enetType, conv, err := ParseEnet(udpPayload)
+	connType, enetType, sessionId, conv, _, err := ParseEnet(udpPayload)
 	if err != nil || connType != ConnEnetEst || enetType != EnetClientConnectKey {
 		return nil, errors.New("recv packet format error")
 	}
 
-	return newUDPSession(conv, nil, conn, true, udpaddr), nil
+	rawConvData := make([]byte, 8)
+	binary.LittleEndian.PutUint32(rawConvData[0:4], sessionId)
+	binary.LittleEndian.PutUint32(rawConvData[4:8], conv)
+	rawConv := binary.LittleEndian.Uint64(rawConvData)
+
+	return newUDPSession(rawConv, nil, conn, true, udpaddr), nil
 }
 
 // NewConn3 establishes a session and talks KCP protocol over a packet connection.
@@ -951,7 +984,7 @@ func NewConn3(convid uint64, raddr net.Addr, conn net.PacketConn) (*UDPSession, 
 // NewConn2 establishes a session and talks KCP protocol over a packet connection.
 func NewConn2(raddr net.Addr, conn net.PacketConn) (*UDPSession, error) {
 	var convid uint64
-	binary.Read(rand.Reader, binary.LittleEndian, &convid)
+	_ = binary.Read(rand.Reader, binary.LittleEndian, &convid)
 	return NewConn3(convid, raddr, conn)
 }
 
@@ -959,7 +992,7 @@ func NewConn2(raddr net.Addr, conn net.PacketConn) (*UDPSession, error) {
 func NewConn(raddr string, conn net.PacketConn) (*UDPSession, error) {
 	udpaddr, err := net.ResolveUDPAddr("udp", raddr)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 	return NewConn2(udpaddr, conn)
 }

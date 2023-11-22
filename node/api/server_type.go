@@ -1,8 +1,11 @@
 package api
 
 const (
-	GATE        = "GATE"
-	GS          = "GS"
-	FIGHT       = "FIGHT"
-	PATHFINDING = "PATHFINDING"
+	NODE     = "NODE"
+	DISPATCH = "DISPATCH"
+	GATE     = "GATE"
+	GS       = "GS"
+	MULTI    = "MULTI"
+	GM       = "GM"
+	ROBOT    = "ROBOT"
 )

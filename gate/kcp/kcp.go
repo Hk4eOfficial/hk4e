@@ -22,13 +22,13 @@ const (
 	IKCP_MTU_DEF     = 1400
 	IKCP_ACK_FAST    = 3
 	IKCP_INTERVAL    = 100
-	IKCP_OVERHEAD    = 24 + 4 // 原神KCP的conv是8个字节
+	IKCP_OVERHEAD    = 24 + 4 // KCP组合会话id是8个字节
 	IKCP_DEADLINK    = 20
 	IKCP_THRESH_INIT = 2
 	IKCP_THRESH_MIN  = 2
 	IKCP_PROBE_INIT  = 7000   // 7 secs to probe window size
 	IKCP_PROBE_LIMIT = 120000 // up to 120 secs to probe window
-	IKCP_SN_OFFSET   = 12 + 4 // 原神KCP的conv是8个字节
+	IKCP_SN_OFFSET   = 12 + 4 // KCP组合会话id是8个字节
 )
 
 // monotonic reference time point
@@ -112,7 +112,7 @@ func _itimediff(later, earlier uint32) int32 {
 
 // segment defines a KCP segment
 type segment struct {
-	conv     uint64 // 原神KCP的conv是8个字节
+	conv     uint64 // KCP组合会话id
 	cmd      uint8
 	frg      uint8
 	wnd      uint16
@@ -143,7 +143,7 @@ func (seg *segment) encode(ptr []byte) []byte {
 
 // KCP defines a single KCP connection
 type KCP struct {
-	conv                                   uint64 // 原神KCP的conv是8个字节
+	conv                                   uint64 // KCP组合会话id
 	mtu, mss, state                        uint32
 	snd_una, snd_nxt, rcv_nxt              uint32
 	ssthresh                               uint32

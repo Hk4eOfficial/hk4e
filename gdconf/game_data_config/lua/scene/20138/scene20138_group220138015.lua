@@ -453,14 +453,10 @@ end
 function action_EVENT_OBSERVATION_POINT_NOTIFY_15017(context, evt)
 	if 15015 == evt.param1 and 404 == evt.param2 then
 		ScriptLib.SetGadgetStateByConfigId(context,15016, GadgetState.GearStart)
-		
-		ScriptLib.SetGadgetStateByConfigId(context,15015, GadgetState.ChestOpened)
-		
+		ScriptLib.SetGadgetStateByConfigId(context,15015, 102)
 		ScriptLib.KillEntityByConfigId(context, {group_id=220138015, config_id=15023, entity_type=EntityType.GADGET})
-		
 		ScriptLib.KillEntityByConfigId(context, {group_id=220138015, config_id=15027, entity_type=EntityType.GADGET})
 	end
-	
 	return 0
 end
 
@@ -577,9 +573,8 @@ end
 -- 触发操作
 function action_EVENT_OBSERVATION_POINT_NOTIFY_15024(context, evt)
 	if 15015 == evt.param1 and 0 == 0 then
-		ScriptLib.SetGadgetStateByConfigId(context,15014, GadgetState.ChestOpened)
+		ScriptLib.SetGadgetStateByConfigId(context,15014, 102)
 	end
-	
 	return 0
 end
 

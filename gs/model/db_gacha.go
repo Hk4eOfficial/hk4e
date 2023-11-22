@@ -14,45 +14,42 @@ type GachaPoolInfo struct {
 
 func (p *Player) GetDbGacha() *DbGacha {
 	if p.DbGacha == nil {
-		p.DbGacha = NewDbGacha()
+		p.DbGacha = &DbGacha{
+			GachaPoolInfo: map[uint32]*GachaPoolInfo{
+				300: {
+					// 温迪
+					GachaType:       300,
+					OrangeTimes:     0,
+					PurpleTimes:     0,
+					MustGetUpOrange: false,
+					MustGetUpPurple: false,
+				},
+				400: {
+					// 可莉
+					GachaType:       400,
+					OrangeTimes:     0,
+					PurpleTimes:     0,
+					MustGetUpOrange: false,
+					MustGetUpPurple: false,
+				},
+				431: {
+					// 阿莫斯之弓&天空之傲
+					GachaType:       431,
+					OrangeTimes:     0,
+					PurpleTimes:     0,
+					MustGetUpOrange: false,
+					MustGetUpPurple: false,
+				},
+				201: {
+					// 常驻
+					GachaType:       201,
+					OrangeTimes:     0,
+					PurpleTimes:     0,
+					MustGetUpOrange: false,
+					MustGetUpPurple: false,
+				},
+			},
+		}
 	}
 	return p.DbGacha
-}
-
-func NewDbGacha() (r *DbGacha) {
-	r = new(DbGacha)
-	r.GachaPoolInfo = make(map[uint32]*GachaPoolInfo)
-	r.GachaPoolInfo[300] = &GachaPoolInfo{
-		// 温迪
-		GachaType:       300,
-		OrangeTimes:     0,
-		PurpleTimes:     0,
-		MustGetUpOrange: false,
-		MustGetUpPurple: false,
-	}
-	r.GachaPoolInfo[400] = &GachaPoolInfo{
-		// 可莉
-		GachaType:       400,
-		OrangeTimes:     0,
-		PurpleTimes:     0,
-		MustGetUpOrange: false,
-		MustGetUpPurple: false,
-	}
-	r.GachaPoolInfo[431] = &GachaPoolInfo{
-		// 阿莫斯之弓&天空之傲
-		GachaType:       431,
-		OrangeTimes:     0,
-		PurpleTimes:     0,
-		MustGetUpOrange: false,
-		MustGetUpPurple: false,
-	}
-	r.GachaPoolInfo[201] = &GachaPoolInfo{
-		// 常驻
-		GachaType:       201,
-		OrangeTimes:     0,
-		PurpleTimes:     0,
-		MustGetUpOrange: false,
-		MustGetUpPurple: false,
-	}
-	return r
 }

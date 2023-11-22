@@ -71,10 +71,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 2,
@@ -171,10 +168,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 3,
@@ -248,10 +242,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 4,
@@ -348,10 +339,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 5,
@@ -425,10 +413,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 6,
@@ -525,10 +510,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 7,
@@ -625,10 +607,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 8,
@@ -725,10 +704,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 9,
@@ -802,10 +778,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 10,
@@ -879,10 +852,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 11,
@@ -956,10 +926,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 12,
@@ -1033,10 +1000,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 13,
@@ -1110,10 +1074,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 14,
@@ -1187,10 +1148,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 15,
@@ -1287,10 +1245,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 16,
@@ -1387,10 +1342,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 17,
@@ -1487,10 +1439,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 18,
@@ -1587,10 +1536,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 19,
@@ -1664,10 +1610,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 20,
@@ -1741,10 +1684,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 21,
@@ -1818,10 +1758,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 22,
@@ -1918,10 +1855,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 23,
@@ -1972,10 +1906,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 24,
@@ -2049,10 +1980,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 25,
@@ -2149,10 +2077,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 26,
@@ -2249,10 +2174,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 27,
@@ -2349,10 +2271,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 28,
@@ -2449,10 +2368,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 29,
@@ -2549,10 +2465,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 30,
@@ -2649,10 +2562,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 31,
@@ -2749,10 +2659,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 32,
@@ -2826,10 +2733,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 33,
@@ -2903,10 +2807,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 34,
@@ -2980,10 +2881,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 35,
@@ -3034,10 +2932,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 36,
@@ -3111,10 +3006,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 37,
@@ -3188,10 +3080,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 38,
@@ -3242,10 +3131,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 39,
@@ -3319,10 +3205,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 40,
@@ -3442,10 +3325,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 41,
@@ -3519,10 +3399,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 42,
@@ -3596,10 +3473,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 43,
@@ -3719,10 +3593,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 44,
@@ -3796,10 +3667,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 45,
@@ -3873,10 +3741,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 46,
@@ -3996,10 +3861,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 47,
@@ -4119,10 +3981,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 48,
@@ -4242,10 +4101,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 49,
@@ -4365,10 +4221,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 50,
@@ -4488,10 +4341,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 51,
@@ -4588,10 +4438,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 52,
@@ -4711,10 +4558,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 53,
@@ -4811,10 +4655,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 54,
@@ -4911,10 +4752,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 55,
@@ -5011,10 +4849,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 56,
@@ -5111,10 +4946,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 57,
@@ -5211,10 +5043,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 58,
@@ -5311,10 +5140,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 59,
@@ -5411,10 +5237,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 60,
@@ -5511,10 +5334,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 61,
@@ -5611,10 +5431,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 62,
@@ -5711,10 +5528,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 63,
@@ -5811,10 +5625,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 64,
@@ -5888,10 +5699,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 65,
@@ -5965,10 +5773,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 66,
@@ -6042,10 +5847,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 67,
@@ -6625,10 +6427,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 68,
@@ -6817,10 +6616,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 69,
@@ -7400,10 +7196,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 70,
@@ -7477,10 +7270,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 71,
@@ -7554,10 +7344,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 72,
@@ -7654,10 +7441,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 73,
@@ -7754,10 +7538,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 74,
@@ -7808,10 +7589,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 75,
@@ -7885,10 +7663,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 76,
@@ -7962,10 +7737,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 77,
@@ -8039,10 +7811,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 78,
@@ -8116,10 +7885,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 79,
@@ -8193,10 +7959,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 80,
@@ -8270,10 +8033,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 81,
@@ -8347,10 +8107,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 82,
@@ -8424,10 +8181,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 83,
@@ -8501,10 +8255,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 84,
@@ -8578,10 +8329,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 85,
@@ -8655,10 +8403,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 86,
@@ -8709,10 +8454,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 87,
@@ -8763,10 +8505,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 88,
@@ -8817,10 +8556,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 89,
@@ -9101,10 +8837,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 90,
@@ -9385,10 +9118,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 91,
@@ -9669,10 +9399,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 92,
@@ -9953,10 +9680,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 93,
@@ -10237,10 +9961,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 94,
@@ -10521,10 +10242,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 95,
@@ -10805,10 +10523,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 96,
@@ -11089,10 +10804,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 97,
@@ -11373,10 +11085,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 98,
@@ -11657,10 +11366,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 99,
@@ -11941,10 +11647,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 100,
@@ -12225,10 +11928,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 101,
@@ -12509,10 +12209,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 102,
@@ -12793,10 +12490,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 103,
@@ -12847,10 +12541,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 104,
@@ -12901,10 +12592,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 105,
@@ -12955,10 +12643,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 106,
@@ -13055,10 +12740,7 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   },
   {
     "pointArrayId": 107,
@@ -13155,9 +12837,6 @@
         "rotSpeed": 0.0,
         "arriveRange": 2.0
       }
-    ],
-    "configPointMap": null,
-    "isSimulateTempRouteByTime": false,
-    "isMoveToRoutePointOnInit": false
+    ]
   }
 ]

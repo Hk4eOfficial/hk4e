@@ -79,6 +79,7 @@ func CloseLogger() {
 	// 等待所有日志打印完毕
 	for {
 		if len(LOG.LogInfoChan) == 0 {
+			time.Sleep(time.Millisecond * 100)
 			break
 		}
 		time.Sleep(time.Millisecond * 100)
@@ -130,7 +131,7 @@ func (l *Logger) writeLogFile(logStr string) {
 		logStr = strings.ReplaceAll(logStr, v, "")
 	}
 	if l.File == nil {
-		file, err := os.OpenFile("./"+l.AppName+".log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		file, err := os.OpenFile("./log/"+l.AppName+".log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 		if err != nil {
 			fmt.Printf(RED+"open new log file error: %v\n"+RESET, err)
 			return
@@ -155,7 +156,7 @@ func (l *Logger) writeLogFile(logStr string) {
 			fmt.Printf(RED+"rename old log file error: %v\n"+RESET, err)
 			return
 		}
-		file, err := os.OpenFile("./"+l.AppName+".log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		file, err := os.OpenFile("./log/"+l.AppName+".log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 		if err != nil {
 			fmt.Printf(RED+"open new log file error: %v\n"+RESET, err)
 			return

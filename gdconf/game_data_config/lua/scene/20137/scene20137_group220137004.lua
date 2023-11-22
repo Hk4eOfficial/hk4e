@@ -130,9 +130,8 @@ end
 -- 触发操作
 function action_EVENT_GROUP_LOAD_4003(context, evt)
 	if ScriptLib.GetHostQuestState(context,4007116) == 3 or ScriptLib.GetGroupVariableValue(context, "doorOpen") == 1 then
-		ScriptLib.RefreshGroup(context, {group_id=0, refresh_level_revise=0, exclude_prev=false, is_force_random_suite=false, suite=3})
+		ScriptLib.RefreshGroup(context, {    suite=3})
 	end
-	
 	return 0
 end
 
@@ -234,10 +233,8 @@ end
 function action_EVENT_GROUP_LOAD_4008(context, evt)
 	if ScriptLib.GetHostQuestState(context,4007116) == 3 then
 		ScriptLib.SetGroupVariableValueByGroup(context, "DoorOpen", 1, 220137015)
-		
 		ScriptLib.SetGroupGadgetStateByConfigId(context, 220137015, 15001, GadgetState.Default)
 	end
-	
 	return 0
 end
 
@@ -245,9 +242,7 @@ end
 function action_EVENT_GROUP_REFRESH_4009(context, evt)
 	if ScriptLib.GetHostQuestState(context,4007116) == 3 then
 		ScriptLib.SetGroupVariableValueByGroup(context, "DoorOpen", 1, 220137015)
-		
 		ScriptLib.SetGroupGadgetStateByConfigId(context, 220137015, 15001, GadgetState.Default)
 	end
-	
 	return 0
 end

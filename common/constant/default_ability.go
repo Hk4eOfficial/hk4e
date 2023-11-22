@@ -3,13 +3,12 @@ package constant
 import "hk4e/pkg/endec"
 
 var (
-	DEFAULT_ABILITY_STRINGS []string
-	DEFAULT_ABILITY_HASHES  []int32
-	DEFAULT_ABILITY_NAME    int32
+	DEFAULT_ABILITY_HASH_CODE      []int32
+	DEFAULT_TEAM_ABILITY_HASH_CODE []int32
 )
 
 func init() {
-	DEFAULT_ABILITY_STRINGS = []string{
+	abilityList := []string{
 		"Avatar_DefaultAbility_VisionReplaceDieInvincible",
 		"Avatar_DefaultAbility_AvartarInShaderChange",
 		"Avatar_SprintBS_Invincible",
@@ -17,10 +16,24 @@ func init() {
 		"Avatar_Attack_ReviveEnergy",
 		"Avatar_Component_Initializer",
 		"Avatar_FallAnthem_Achievement_Listener",
+		"GrapplingHookSkill_Ability",
+		"Avatar_PlayerBoy_DiveStamina_Reduction",
+		"Ability_Avatar_Dive_SealEcho",
+		"Absorb_SealEcho_Bullet_01",
+		"Absorb_SealEcho_Bullet_02",
+		"Ability_Avatar_Dive_CrabShield",
+		"ActivityAbility_Absorb_Shoot",
+		"SceneAbility_DiveVolume",
 	}
-	DEFAULT_ABILITY_HASHES = make([]int32, 0)
-	for _, v := range DEFAULT_ABILITY_STRINGS {
-		DEFAULT_ABILITY_HASHES = append(DEFAULT_ABILITY_HASHES, endec.Hk4eAbilityHashCode(v))
+	DEFAULT_ABILITY_HASH_CODE = make([]int32, 0)
+	for _, ability := range abilityList {
+		DEFAULT_ABILITY_HASH_CODE = append(DEFAULT_ABILITY_HASH_CODE, endec.Hk4eAbilityHashCode(ability))
 	}
-	DEFAULT_ABILITY_NAME = endec.Hk4eAbilityHashCode("Default")
+	abilityList = []string{
+		"Ability_Avatar_Dive_Team",
+	}
+	DEFAULT_TEAM_ABILITY_HASH_CODE = make([]int32, 0)
+	for _, ability := range abilityList {
+		DEFAULT_TEAM_ABILITY_HASH_CODE = append(DEFAULT_TEAM_ABILITY_HASH_CODE, endec.Hk4eAbilityHashCode(ability))
+	}
 }

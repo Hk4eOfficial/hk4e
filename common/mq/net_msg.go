@@ -4,7 +4,6 @@ import pb "google.golang.org/protobuf/proto"
 
 const (
 	MsgTypeGame     = iota // 来自客户端的游戏消息
-	MsgTypeFight           // 战斗服务器消息
 	MsgTypeConnCtrl        // GATE客户端连接信息消息
 	MsgTypeServer          // 服务器之间转发的消息
 )
@@ -16,7 +15,6 @@ type NetMsg struct {
 	AppId             string `msgpack:"-"`
 	Topic             string `msgpack:"-"`
 	GameMsg           *GameMsg
-	FightMsg          *FightMsg
 	ConnCtrlMsg       *ConnCtrlMsg
 	ServerMsg         *ServerMsg
 	OriginServerType  string
@@ -37,7 +35,6 @@ type GameMsg struct {
 
 const (
 	ClientRttNotify   = iota // 客户端网络时延上报
-	ClientTimeNotify         // 客户端本地时间上报
 	KickPlayerNotify         // 通知GATE剔除玩家
 	UserOfflineNotify        // 玩家离线通知GS
 )
@@ -45,46 +42,40 @@ const (
 type ConnCtrlMsg struct {
 	UserId     uint32
 	ClientRtt  uint32
-	ClientTime uint32
 	KickUserId uint32
 	KickReason uint32
 }
 
 const (
-	AddFightRoutine       = iota // 添加战斗实例
-	DelFightRoutine              // 删除战斗实例
-	FightRoutineAddEntity        // 战斗实例添加实体
-	FightRoutineDelEntity        // 战斗实例删除实体
-)
-
-type FightMsg struct {
-	FightRoutineId  uint32
-	EntityId        uint32
-	FightPropMap    map[uint32]float32
-	Uid             uint32
-	AvatarGuid      uint64
-	GateServerAppId string
-}
-
-const (
-	ServerAppidBindNotify             = iota // 玩家连接绑定的各个服务器appid通知
-	ServerUserOnlineStateChangeNotify        // 广播玩家上线和离线状态以及所在GS的appid
-	ServerUserGsChangeNotify                 // 跨服玩家迁移通知
-	ServerUserMpReq                          // 跨服多人世界相关请求
-	ServerUserMpRsp                          // 跨服多人世界相关响应
-	ServerChatMsgNotify                      // 跨服玩家聊天消息通知
-	ServerAddFriendNotify                    // 跨服添加好友通知
+	ServerAppidBindNotify              = iota // 玩家连接绑定的各个服务器appid通知
+	ServerUserOnlineStateChangeNotify         // 广播玩家上线和离线状态以及所在GS的appid
+	ServerUserGsChangeNotify                  // 跨服玩家迁移通知
+	ServerPlayerMpReq                         // 跨服多人世界相关请求
+	ServerPlayerMpRsp                         // 跨服多人世界相关响应
+	ServerChatMsgNotify                       // 跨服玩家聊天消息通知
+	ServerAddFriendNotify                     // 跨服添加好友通知
+	ServerForwardModeClientConnNotify         // 转发模式客户端连接通知
+	ServerForwardModeClientCloseNotify        // 转发模式客户端断开连接通知
+	ServerForwardModeServerCloseNotify        // 转发模式服务器断开连接通知
+	ServerForwardDispatchInfoNotify           // 转发模式区服信息通知
+	ServerStopNotify                          // 停服通知
+	ServerDispatchCancelNotify                // 服务器取消调度通知
+	ServerGmCmdNotify                         // 服务器GM指令执行通知
 )
 
 type ServerMsg struct {
-	FightServerAppId string
-	UserId           uint32
-	IsOnline         bool
-	GameServerAppId  string
-	JoinHostUserId   uint32
-	UserMpInfo       *UserMpInfo
-	ChatMsgInfo      *ChatMsgInfo
-	AddFriendInfo    *AddFriendInfo
+	MultiServerAppId    string
+	UserId              uint32
+	IsOnline            bool
+	GameServerAppId     string
+	JoinHostUserId      uint32
+	PlayerMpInfo        *PlayerMpInfo
+	ChatMsgInfo         *ChatMsgInfo
+	AddFriendInfo       *AddFriendInfo
+	ForwardDispatchInfo *ForwardDispatchInfo
+	AppVersion          string
+	GmCmdFuncName       string
+	GmCmdParamList      []string
 }
 
 type OriginInfo struct {
@@ -92,7 +83,7 @@ type OriginInfo struct {
 	UserId  uint32
 }
 
-type UserBaseInfo struct {
+type PlayerBaseInfo struct {
 	UserId         uint32
 	Nickname       string
 	PlayerLevel    uint32
@@ -104,11 +95,11 @@ type UserBaseInfo struct {
 	WorldLevel     uint32
 }
 
-type UserMpInfo struct {
+type PlayerMpInfo struct {
 	OriginInfo            *OriginInfo
 	HostUserId            uint32
 	ApplyUserId           uint32
-	ApplyPlayerOnlineInfo *UserBaseInfo
+	ApplyPlayerOnlineInfo *PlayerBaseInfo
 	ApplyOk               bool
 	Agreed                bool
 	Reason                int32
@@ -116,17 +107,24 @@ type UserMpInfo struct {
 }
 
 type ChatMsgInfo struct {
-	Time    uint32
-	ToUid   uint32
-	Uid     uint32
-	IsRead  bool
-	MsgType uint8
-	Text    string
-	Icon    uint32
+	Time     uint32
+	ToUid    uint32
+	Uid      uint32
+	IsRead   bool
+	MsgType  uint8
+	Text     string
+	Icon     uint32
+	IsDelete bool
 }
 
 type AddFriendInfo struct {
 	OriginInfo            *OriginInfo
 	TargetUserId          uint32
-	ApplyPlayerOnlineInfo *UserBaseInfo
+	ApplyPlayerOnlineInfo *PlayerBaseInfo
+}
+
+type ForwardDispatchInfo struct {
+	GateIp      string
+	GatePort    uint32
+	DispatchKey []byte
 }

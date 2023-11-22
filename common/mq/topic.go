@@ -35,9 +35,9 @@ func (m *MessageQueue) SendToGs(appId string, netMsg *NetMsg) {
 	m.netMsgInput <- netMsg
 }
 
-func (m *MessageQueue) SendToFight(appId string, netMsg *NetMsg) {
-	netMsg.Topic = m.getTopic(api.FIGHT, appId)
-	netMsg.ServerType = api.FIGHT
+func (m *MessageQueue) SendToMulti(appId string, netMsg *NetMsg) {
+	netMsg.Topic = m.getTopic(api.MULTI, appId)
+	netMsg.ServerType = api.MULTI
 	netMsg.AppId = appId
 	originServerType, originServerAppId := m.getOriginServer()
 	netMsg.OriginServerType = originServerType
@@ -45,9 +45,19 @@ func (m *MessageQueue) SendToFight(appId string, netMsg *NetMsg) {
 	m.netMsgInput <- netMsg
 }
 
-func (m *MessageQueue) SendToPathfinding(appId string, netMsg *NetMsg) {
-	netMsg.Topic = m.getTopic(api.PATHFINDING, appId)
-	netMsg.ServerType = api.PATHFINDING
+func (m *MessageQueue) SendToRobot(appId string, netMsg *NetMsg) {
+	netMsg.Topic = m.getTopic(api.ROBOT, appId)
+	netMsg.ServerType = api.ROBOT
+	netMsg.AppId = appId
+	originServerType, originServerAppId := m.getOriginServer()
+	netMsg.OriginServerType = originServerType
+	netMsg.OriginServerAppId = originServerAppId
+	m.netMsgInput <- netMsg
+}
+
+func (m *MessageQueue) SendToDispatch(appId string, netMsg *NetMsg) {
+	netMsg.Topic = m.getTopic(api.DISPATCH, appId)
+	netMsg.ServerType = api.DISPATCH
 	netMsg.AppId = appId
 	originServerType, originServerAppId := m.getOriginServer()
 	netMsg.OriginServerType = originServerType

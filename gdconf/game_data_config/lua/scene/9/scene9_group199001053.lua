@@ -174,10 +174,8 @@ function action_EVENT_GADGET_STATE_CHANGE_53025(context, evt)
 		else
 			ScriptLib.SetWorktopOptionsByGroupId(context, 0, 53024, {68})
 		end
-		
 		ScriptLib.SetGroupVariableValue(context, "Open", 1)
 	end
-	
 	return 0
 end
 
@@ -216,7 +214,6 @@ function action_EVENT_GROUP_LOAD_53027(context, evt)
 	if ScriptLib.GetGroupVariableValue(context, "Open") == 1 and (not ScriptLib.CheckIsInMpMode(context)) then
 		ScriptLib.SetWorktopOptionsByGroupId(context, 0, 53024, {68})
 	end
-	
 	return 0
 end
 

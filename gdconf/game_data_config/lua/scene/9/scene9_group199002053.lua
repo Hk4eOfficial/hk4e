@@ -210,10 +210,8 @@ end
 -- 触发操作
 function action_EVENT_GROUP_LOAD_53011(context, evt)
 	ScriptLib.GetHostQuestState(context,7902613)
-	
 	if 2 == ScriptLib.GetHostQuestState(context,7902613) then
 		ScriptLib.AddExtraGroupSuite(context, 0, 3)
 	end
-	
 	return 0
 end

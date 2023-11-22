@@ -49,7 +49,7 @@ type ScenePoint struct {
 type PointData struct {
 	Id                int32     `json:"-"`
 	PointType         int       `json:"-"`
-	PointTypeStr      string    `json:"pointType"`         // 传送点类型
+	PointTypeStr      string    `json:"$type"`             // 传送点类型
 	TranPos           *Position `json:"tranPos"`           // 传送后位置
 	TranRot           *Position `json:"tranRot"`           // 传送后朝向
 	DungeonIds        []int32   `json:"dungeonIds"`        // 地牢id列表

@@ -8,7 +8,7 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_Execution_SwitchSkill_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_Execution_SwitchSkill",
           "doOffStage": true,
           "target": "Self",
         },
@@ -16,7 +16,7 @@
       "onRemoved": [
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Seeker_Execution_SwitchSkill_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Seeker_Execution_SwitchSkill": {
           "isUnique": true,
           "onAdded": [
             {
@@ -66,7 +66,7 @@
               "muteRemoteAction": true,
               "authorityOnly": true,
               "doOffStage": true,
-              "toPlayMode": "HideAndSeek_AliveV2",
+              "toPlayMode": "HideAndSeek",
             },
           ],
           "onRemoved": [
@@ -262,7 +262,7 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_Guide_SwitchSkill_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_Guide_SwitchSkill",
           "doOffStage": true,
           "target": "Self",
         },
@@ -271,7 +271,7 @@
       "onRemoved": [
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Seeker_Guide_SwitchSkill_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Seeker_Guide_SwitchSkill": {
           "isUnique": true,
           "stacking": "Refresh",
           "onAdded": [
@@ -333,7 +333,7 @@
         },
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_Guide_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_Guide_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -341,7 +341,7 @@
       "onRemoved": [
         {
           "$type": "RemoveModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_Guide_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_Guide_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -399,7 +399,7 @@
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Seeker_Guide_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Seeker_Guide_Team": {
           "isUnique": true,
           "modifierMixins": [
             {
@@ -559,7 +559,7 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_BreakDisguise_SwitchSkill_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_BreakDisguise_SwitchSkill",
           "doOffStage": true,
           "target": "Self",
         },
@@ -568,7 +568,7 @@
       "onRemoved": [
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Seeker_BreakDisguise_SwitchSkill_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Seeker_BreakDisguise_SwitchSkill": {
           "isUnique": true,
           "stacking": "Refresh",
           "onAdded": [
@@ -619,7 +619,7 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_BreakDisguise_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_BreakDisguise_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -627,7 +627,7 @@
       "onRemoved": [
         {
           "$type": "RemoveModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_BreakDisguise_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_BreakDisguise_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -676,7 +676,7 @@
 
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Seeker_BreakDisguise_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Seeker_BreakDisguise_Team": {
           "isUnique": true,
           "stacking": "Refresh",
           "modifierMixins": [
@@ -754,13 +754,13 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_Positioning_SwitchSkill_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_Positioning_SwitchSkill",
           "doOffStage": true,
           "target": "Self",
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Seeker_Positioning_SwitchSkill_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Seeker_Positioning_SwitchSkill": {
           "isUnique": true,
           "stacking": "Refresh",
           "onAdded": [
@@ -860,7 +860,7 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_UltraMark_Seeker_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_UltraMark_Seeker_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -868,13 +868,13 @@
       "onRemoved": [
         {
           "$type": "RemoveModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_UltraMark_Seeker_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_UltraMark_Seeker_Team",
           "doOffStage": true,
           "target": "Team",
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_StateHandle_UltraMark_Seeker_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_StateHandle_UltraMark_Seeker_Team": {
           "isUnique": true,
           "stacking": "Refresh",
           "modifierMixins": [
@@ -939,7 +939,7 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_FindAll_SwitchSkill_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_FindAll_SwitchSkill",
           "doOffStage": true,
           "target": "Self",
         },
@@ -947,7 +947,7 @@
       "onRemoved": [
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Seeker_FindAll_SwitchSkill_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Seeker_FindAll_SwitchSkill": {
           "isUnique": true,
           "stacking": "Refresh",
           "onAdded": [
@@ -1070,7 +1070,7 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_SuperLockon_SwitchSkill_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_SuperLockon_SwitchSkill",
           "doOffStage": true,
           "target": "Self",
         },
@@ -1078,7 +1078,7 @@
       "onRemoved": [
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Seeker_SuperLockon_SwitchSkill_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Seeker_SuperLockon_SwitchSkill": {
           "isUnique": true,
           "stacking": "Refresh",
           "onAdded": [
@@ -1127,7 +1127,7 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_SuperPrison_Seeker_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_SuperPrison_Seeker_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -1135,7 +1135,7 @@
       "onRemoved": [
         {
           "$type": "RemoveModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_SuperPrison_Seeker_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_SuperPrison_Seeker_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -1191,7 +1191,7 @@
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_StateHandle_SuperPrison_Seeker_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_StateHandle_SuperPrison_Seeker_Team": {
           "isUnique": true,
           "stacking": "Refresh",
           "modifierMixins": [
@@ -1374,7 +1374,7 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hider_Disguise_SwitchSkill_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hider_Disguise_SwitchSkill",
           "doOffStage": true,
           "target": "Self",
         },
@@ -1392,7 +1392,7 @@
       "onRemoved": [
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Hider_Disguise_SwitchSkill_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Hider_Disguise_SwitchSkill": {
           "isUnique": true,
           "stacking": "Refresh",
           "onAdded": [
@@ -1416,7 +1416,7 @@
               "muteRemoteAction": true,
               "doOffStage": true,
               "authorityOnly": true,
-              "toPlayMode": "HideAndSeek_AliveV2",
+              "toPlayMode": "HideAndSeek",
               "canBeHandledOnRecover": true,
             },
 
@@ -1572,7 +1572,7 @@
           "$type": "AttachModifier",
           "doOffStage": true,
           "target": "Team",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hider_DisguiseHandler_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hider_DisguiseHandler_Team",
         },
 
 
@@ -1582,7 +1582,7 @@
           "$type": "RemoveModifier",
           "doOffStage": true,
           "target": "Team",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hider_DisguiseHandler_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hider_DisguiseHandler_Team",
         },
       ],
       "onAbilityStart": [
@@ -1606,7 +1606,7 @@
         */
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Hider_DisguiseHandler_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Hider_DisguiseHandler_Team": {
           "isUnique": true,
           "modifierMixins": [
             {
@@ -2480,7 +2480,7 @@
             //改为通过Mixin的方式设置visible
             {
               "$type": "AttachModifier",
-              "modifierName": "UNIQUE_Hider_Transfer_Invisible_V2",
+              "modifierName": "UNIQUE_Hider_Transfer_Invisible",
             },
             //关掉角色碰撞
             {
@@ -2491,7 +2491,7 @@
             //变身状态下移速降低
             {
               "$type": "AttachModifier",
-              "modifierName": "UNIQUE_Hider_MoveSpeedDown_V2",
+              "modifierName": "UNIQUE_Hider_MoveSpeedDown",
             }
           ],
           "onRemoved": [
@@ -2504,7 +2504,7 @@
             */
             {
               "$type": "RemoveModifier",
-              "modifierName": "UNIQUE_Hider_Transfer_Invisible_V2",
+              "modifierName": "UNIQUE_Hider_Transfer_Invisible",
             },
             //关掉角色碰撞
             {
@@ -2515,7 +2515,7 @@
             //清除移速降低
             {
               "$type": "RemoveModifier",
-              "modifierName": "UNIQUE_Hider_MoveSpeedDown_V2",
+              "modifierName": "UNIQUE_Hider_MoveSpeedDown",
             },
             {
               "$type": "DebugLog",
@@ -2541,7 +2541,7 @@
             }
           ]
         },
-        "UNIQUE_Hider_MoveSpeedDown_V2": {
+        "UNIQUE_Hider_MoveSpeedDown": {
           "isLimitedProperties": true,
           "stacking": "Unique",
           "isUnique": true,
@@ -2549,7 +2549,7 @@
             "Animator_MoveSpeedRatio": -0.5,
           },
         },
-        "UNIQUE_Hider_Transfer_Invisible_V2": {
+        "UNIQUE_Hider_Transfer_Invisible": {
           "isUnique": true,
           "modifierMixins": [
             {
@@ -2560,7 +2560,7 @@
           ]
         },
 
-        "UNIQUE_HideAndSeek_Skill_Transfer_Quit_Modifier_V2": {
+        "UNIQUE_HideAndSeek_Skill_Transfer_Quit_Modifier": {
           "isUnique": true,
           "duration": 0.1,
           "onAdded": [
@@ -2690,7 +2690,7 @@
             // },
             {
               "$type": "ApplyModifier",
-              "modifierName": "UNIQUE_HideAndSeek_Skill_Transfer_Quit_Modifier_V2",
+              "modifierName": "UNIQUE_HideAndSeek_Skill_Transfer_Quit_Modifier",
               "target": "Self",
             },
             {
@@ -2749,11 +2749,6 @@
       "onAdded": 
       [
         {
-          "$type": "SetGlobalValue",
-          "key": "_HideSeek_Is_Disguise_Gadget",
-          "value": 1
-        },
-        {
           "$type": "KillSelf",
           "predicates": 
           [
@@ -2765,128 +2760,13 @@
               "compareType": "NoneOrEqual",
             },
           ],
-        },
-        {
-          "$type": "AttachModifier",
-          "modifierName": "HideSeek_Disguise_Gadget_Invisible_Handler",         
         }
+        
       ],
       "onAbilityStart": 
       [
       ],
-      "modifiers": 
-      {
-        "HideSeek_Disguise_Gadget_Invisible_Handler":
-        {
-          "modifierMixins": 
-          [
-            {
-              "$type":"AttachModifierToSelfGlobalValueNoInitMixin",
-              "globalValueKey":"_HideSeek_Disguise_Gadget_Invisible_Mark",
-              "valueSteps":
-              [
-                 0.5,
-                 1.5
-              ],
-              "removeAppliedModifier":true,
-              "modifierNameSteps":
-              [
-                 "HideSeek_Disguise_Gadget_Invisible"
-              ]
-           },
-          ],
-          "onAdded": 
-          [
-            {
-              "$type": "CopyGlobalValue",
-              "srcTarget": "OriginOwner",
-              "srcKey": "SGV_HideSeek_Real_Invisible_Mark",
-              "dstTarget": "Self",
-              "dstKey": "_HideSeek_Disguise_Gadget_Invisible_Mark",
-            }
-          ],
-          "thinkInterval": 0.3,
-          "onThinkInterval": 
-          [
-            {
-              "$type": "CopyGlobalValue",
-              "srcTarget": "OriginOwner",
-              "srcKey": "SGV_HideSeek_Real_Invisible_Mark",
-              "dstTarget": "Self",
-              "dstKey": "_HideSeek_Disguise_Gadget_Invisible_Mark",
-            }
-          ]
-        },
-        "HideSeek_Disguise_Gadget_Invisible":
-        {
-          "modifierMixins": 
-          [
-            {
-              "$type":"EntityDitherMixin",
-              "ditherValue":0.5,
-              "cutInTime":0.2,
-              "cutOutTime":0.2
-           }
-          ],
-          "onAdded": 
-          [
-            {
-              "$type": "DoActionsLocal",
-              "canBeHandledOnRecover": true,
-              "actionList": 
-              [
-                {
-                  "$type": "EnableSceneTransformByName",
-                  "transformNames": ["Obj"],
-                  "setEnable": false,
-                  "predicates": 
-                  [
-                    {
-                      "$type": "ByNot",
-                      "predicates": 
-                      [
-                        {
-                          "$type": "ByIsLocalAvatar",
-                          "target": "OriginOwner",
-                        }
-                      ]
-                    },
-                  ]
-                }
-              ]
-            }
-          ],
-          "onRemoved": 
-          [
-            {
-              "$type": "DoActionsLocal",
-              "canBeHandledOnRecover": true,
-              "actionList": 
-              [
-                {
-                  "$type": "EnableSceneTransformByName",
-                  "transformNames": ["Obj"],
-                  "setEnable": true,
-                  "predicates": 
-                  [
-                    {
-                      "$type": "ByNot",
-                      "predicates": 
-                      [
-                        {
-                          "$type": "ByIsLocalAvatar",
-                          "target": "OriginOwner",
-                        }
-                      ]
-                    },
-                    
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      }
+
     },
   },
 
@@ -2901,7 +2781,7 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hider_Invisibility_SwitchSkill_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hider_Invisibility_SwitchSkill",
           "doOffStage": true,
           "target": "Self",
         },
@@ -2916,7 +2796,7 @@
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Hider_Invisibility_SwitchSkill_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Hider_Invisibility_SwitchSkill": {
           "isUnique": true,
           "stacking": "Refresh",
           "onAdded": [
@@ -3017,13 +2897,13 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hider_Bait_SwitchSkill_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hider_Bait_SwitchSkill",
           "doOffStage": true,
           "target": "Self",
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Hider_Bait_SwitchSkill_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Hider_Bait_SwitchSkill": {
           "isUnique": true,
           "stacking": "Refresh",
           "onAdded": [
@@ -3091,24 +2971,6 @@
           "value": 0,
           "target": "Team",
           "doOffStage": true,
-          "predicates": 
-          [
-            {
-              "$type": "ByIsLocalAvatar",
-              "target": "TargetOriginOwner"
-            }
-          ]
-        },
-        {
-          "$type": "SetGlobalValue",
-          "otherTargets":
-          {
-            "$type": "SelectTargetsByChildrenEntityType",
-            "entityType": "Gadget",
-          },"predicates": 
-          [
-
-          ]
         },
         //找自身周围有没有诱饵
         {
@@ -3163,7 +3025,7 @@
             },
             {
               "$type": "ApplyModifier",
-              "modifierName": "UNIQUE_Eff_Activity_HideSeek_Bait_Disappear_V2",
+              "modifierName": "UNIQUE_Eff_Activity_HideSeek_Bait_Disappear",
               "target": "Self",
             },
 
@@ -3223,7 +3085,7 @@
         },
       ],
       "modifiers": {
-        "UNIQUE_Eff_Activity_HideSeek_Bait_Disappear_V2": {
+        "UNIQUE_Eff_Activity_HideSeek_Bait_Disappear": {
           "duration": 1,
           "isUnique": true,
           "onAdded": [
@@ -3700,7 +3562,7 @@
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hider_SpeedUp_SwitchSkill_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hider_SpeedUp_SwitchSkill",
           "doOffStage": true,
           "target": "Self",
         },
@@ -3709,7 +3571,7 @@
       "onRemoved": [
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Hider_SpeedUp_SwitchSkill_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Hider_SpeedUp_SwitchSkill": {
           "isUnique": true,
           "stacking": "Refresh",
           "onAdded": [
@@ -4479,7 +4341,7 @@ local HS_State
 
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Player_Init_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Player_Init",
           "doOffStage": true,
           "target": "Self",
         }, //挂上抗摔
@@ -4668,7 +4530,7 @@ local HS_State
         }, //SGV_Is_In_Rampage */
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Player_Init_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Player_Init": {
           "isUnique": true,
           "isLimitedProperties": true,
           "properties": {
@@ -4689,7 +4551,7 @@ local HS_State
           "$type": "AttachModifier",
           "doOffStage": true,
           "target": "Team",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_RampageHandle_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_RampageHandle_Team",
         },
       ],
       "onRemoved": [
@@ -4697,11 +4559,11 @@ local HS_State
           "$type": "RemoveModifier",
           "doOffStage": true,
           "target": "Team",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_RampageHandle_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_RampageHandle_Team",
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_StateHandle_RampageHandle_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_StateHandle_RampageHandle_Team": {
           "isUnique":true,
           "modifierMixins": [
             {
@@ -4725,11 +4587,11 @@ local HS_State
           "modifierMixins": [
             {
               "$type": "CurLocalAvatarMixinV2",
-              "modifierName": "UNIQUE_Rampage_Avatar_V2",
+              "modifierName": "UNIQUE_Rampage_Avatar",
             },
           ],
         },
-        "UNIQUE_Rampage_Avatar_V2": {
+        "UNIQUE_Rampage_Avatar": {
           "isUnique": true,
           "isLimitedProperties": true,
           "stacking": "Unique",
@@ -4774,7 +4636,7 @@ local HS_State
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_PlayerState_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_PlayerState_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -4788,7 +4650,7 @@ local HS_State
       "onRemoved": [
         {
           "$type": "RemoveModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_PlayerState_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_PlayerState_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -4796,7 +4658,7 @@ local HS_State
       "modifiers": {
         "SGV_HideAndSeek_PlayerState_OnMap_Blank":{},
         "SGV_HideAndSeek_PlayerState_Moveable_Blank":{},
-        "UNIQUE_ActivityAbility_HideSeek_StateHandle_PlayerState_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_StateHandle_PlayerState_Team": {
           "isUnique": true,
           "stacking": "Refresh",
           "modifierMixins": [
@@ -5058,7 +4920,7 @@ local HS_State
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_UltraMark_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_UltraMark_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -5066,13 +4928,13 @@ local HS_State
       "onRemoved": [
         {
           "$type": "RemoveModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_UltraMark_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_UltraMark_Team",
           "doOffStage": true,
           "target": "Team",
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_StateHandle_UltraMark_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_StateHandle_UltraMark_Team": {
           "isUnique": true,
           "stacking": "Refresh",
           "modifierMixins": [
@@ -5188,7 +5050,7 @@ local HS_State
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_GlobalSight_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_GlobalSight_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -5196,13 +5058,13 @@ local HS_State
       "onRemoved": [
         {
           "$type": "RemoveModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_GlobalSight_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_GlobalSight_Team",
           "doOffStage": true,
           "target": "Team",
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_StateHandle_GlobalSight_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_StateHandle_GlobalSight_Team": {
           "isUnique": true,
           "stacking": "Refresh",
           "modifierMixins": [
@@ -5299,7 +5161,7 @@ local HS_State
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_SuperPrison_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_SuperPrison_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -5307,13 +5169,13 @@ local HS_State
       "onRemoved": [
         {
           "$type": "RemoveModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_SuperPrison_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_SuperPrison_Team",
           "doOffStage": true,
           "target": "Team",
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_StateHandle_SuperPrison_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_StateHandle_SuperPrison_Team": {
           "isUnique": true,
           "stacking": "Refresh",
           "modifierMixins": [
@@ -5642,7 +5504,7 @@ local HS_State
           "$type": "AttachModifier",
           "doOffStage": true,
           "target": "Team",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_FindAll_Target_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_FindAll_Target_Team",
         }
       ],
       "onRemoved": [
@@ -5650,11 +5512,11 @@ local HS_State
           "$type": "RemoveModifier",
           "doOffStage": true,
           "target": "Team",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_FindAll_Target_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Seeker_FindAll_Target_Team",
         }
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Seeker_FindAll_Target_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Seeker_FindAll_Target_Team": {
           "isUnique": true,
           "stacking": "Refresh",
           "modifierMixins": [
@@ -5846,7 +5708,7 @@ local HS_State
           "$type": "AttachModifier",
           "doOffStage": true,
           "target": "Team",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee",
         },
       ],
       "onRemoved": [
@@ -5854,11 +5716,11 @@ local HS_State
           "$type": "RemoveModifier",
           "doOffStage": true,
           "target": "Team",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee",
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee": {
           "isUnique": true,
           "modifierMixins": [
             {
@@ -5871,25 +5733,26 @@ local HS_State
             {
               "$type": "AttachModifierToSelfGlobalValueMixin",
               "globalValueKey": "HideAndSeek_Get_Blind",
-              "valueSteps": [ 0.5, 1.5 ],
+              "valueSteps": [ -0.5, 0.5, 1.5 ],
               //"removeAppliedModifier":true,
-              "modifierNameSteps": [               
-                "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee_Team_V2",
+              "modifierNameSteps": [
+                "UNIQUE_HideSeek_Hunter_CantSee_Blank",
+                "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee_Team",
               ],
             }
           ]
         },
 
-        "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee_Team": {
           "isUnique":true,
           "modifierMixins": [
             {
               "$type": "CurLocalAvatarMixinV2",
-              "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee_Avatar_V2",
+              "modifierName": "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee_Avatar",
             },
           ]
         },
-        "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee_Avatar_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_Hunter_CantSee_Avatar": {
           "isUnique": true,
           "duration": 3,
           "onAdded": [
@@ -5949,7 +5812,12 @@ local HS_State
           ]
         },
 
+        "UNIQUE_HideSeek_Hunter_CantSee_Blank": {
+          "isUnique": true,
+        }
+
       }
+
     }
   },
 
@@ -5988,12 +5856,12 @@ local HS_State
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_Mark_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_Mark",
           "doOffStage": true,
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_StateHandle_Mark_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_StateHandle_Mark": {
           "isUnique": true,
           "stacking": "Refresh",
           "modifierMixins": [
@@ -6073,7 +5941,7 @@ local HS_State
       "onAdded": [
         {
           "$type": "AttachModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_Visible_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_Visible_Team",
           "doOffStage": true,
           "target": "Team",
         },
@@ -6081,13 +5949,13 @@ local HS_State
       "onRemoved": [
         {
           "$type": "RemoveModifier",
-          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_Visible_Team_V2",
+          "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_Visible_Team",
           "doOffStage": true,
           "target": "Team",
         },
       ],
       "modifiers": {
-        "UNIQUE_ActivityAbility_HideSeek_StateHandle_Visible_Team_V2": {
+        "UNIQUE_ActivityAbility_HideSeek_StateHandle_Visible_Team": {
           "isUnique": true,
           "stacking": "Refresh",
           "modifierMixins": [
@@ -6325,7 +6193,7 @@ local HS_State
         "$type": "AttachModifier",
         "doOffStage": true,
         "target": "Team",
-        "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_Is_Detected_Team_V2",
+        "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_Is_Detected_Team",
       }
     ],
     "onRemoved": [
@@ -6333,11 +6201,11 @@ local HS_State
         "$type": "RemoveModifier",
         "doOffStage": true,
         "target": "Team",
-        "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_Is_Detected_Team_V2",
+        "modifierName": "UNIQUE_ActivityAbility_HideSeek_StateHandle_Is_Detected_Team",
       }
     ],
     "modifiers": {
-      "UNIQUE_ActivityAbility_HideSeek_StateHandle_Is_Detected_Team_V2": {
+      "UNIQUE_ActivityAbility_HideSeek_StateHandle_Is_Detected_Team": {
         "isUnique": true,
         "modifierMixins": [
           {

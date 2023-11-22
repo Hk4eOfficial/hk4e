@@ -1,86 +1,129 @@
 syntax = "proto3";
 
 package node.api;
+
 option go_package = "hk4e/node/api;api";
 
 // 节点服务器注册发现服务
 service Discovery {
-  // 服务器启动注册获取appid
-  rpc RegisterServer (RegisterServerReq) returns (RegisterServerRsp) {}
-  // 服务器关闭取消注册
-  rpc CancelServer (CancelServerReq) returns (NullMsg) {}
-  // 服务器在线心跳保持
-  rpc KeepaliveServer (KeepaliveServerReq) returns (NullMsg) {}
-  // 获取负载最小的服务器的appid
-  rpc GetServerAppId (GetServerAppIdReq) returns (GetServerAppIdRsp) {}
-  // 获取区服密钥信息
-  rpc GetRegionEc2b (NullMsg) returns (RegionEc2b) {}
-  // 获取负载最小的网关服务器的地址和端口
-  rpc GetGateServerAddr (GetGateServerAddrReq) returns (GateServerAddr) {}
-  // 获取全部网关服务器信息列表
-  rpc GetAllGateServerInfoList (NullMsg) returns (GateServerInfoList) {}
-  // 获取主游戏服务器的appid
-  rpc GetMainGameServerAppId (NullMsg) returns (GetMainGameServerAppIdRsp) {}
+    // 服务器启动注册获取appid
+    rpc RegisterServer (RegisterServerReq) returns (RegisterServerRsp) {}
+    // 服务器关闭取消注册
+    rpc CancelServer (CancelServerReq) returns (NullMsg) {}
+    // 服务器在线心跳保持
+    rpc KeepaliveServer (KeepaliveServerReq) returns (NullMsg) {}
+    // 获取负载最小的服务器的appid
+    rpc GetServerAppId (GetServerAppIdReq) returns (GetServerAppIdRsp) {}
+    // 获取区服密钥信息
+    rpc GetRegionEc2b (NullMsg) returns (RegionEc2b) {}
+    // 获取负载最小的网关服务器的地址和端口
+    rpc GetGateServerAddr (GetGateServerAddrReq) returns (GateServerAddr) {}
+    // 获取全部网关服务器信息列表
+    rpc GetAllGateServerInfoList (NullMsg) returns (GateServerInfoList) {}
+    // 获取主游戏服务器的appid
+    rpc GetMainGameServerAppId (NullMsg) returns (GetMainGameServerAppIdRsp) {}
+    // 获取全服玩家GS在线列表
+    rpc GetGlobalGsOnlineMap (NullMsg) returns (GlobalGsOnlineMap) {}
+    // 获取停服维护信息
+    rpc GetStopServerInfo (NullMsg) returns (StopServerInfo) {}
+    // 修改停服维护信息
+    rpc SetStopServerInfo (StopServerInfo) returns (NullMsg) {}
+    // 获取停服维护白名单
+    rpc GetWhiteList (NullMsg) returns (GetWhiteListRsp) {}
+    // 修改停服维护白名单
+    rpc SetWhiteList (SetWhiteListReq) returns (NullMsg) {}
+    // 获取下一个自增uid
+    rpc GetNextUid (NullMsg) returns (GetNextUidRsp) {}
+    // 取消调度指定app版本的所有服务器
+    rpc ServerDispatchCancel (ServerDispatchCancelReq) returns (NullMsg) {}
 }
 
 message NullMsg {
 }
 
 message GetServerAppIdReq {
-  string server_type = 1;
+    string server_type = 1;
 }
 
 message GetServerAppIdRsp {
-  string app_id = 1;
+    string app_id = 1;
 }
 
 message RegisterServerReq {
-  string          server_type      = 1;
-  GateServerAddr  gate_server_addr = 2;
-  repeated string version          = 3;
+    string server_type = 1;
+    string app_version = 2;
+    GateServerAddr gate_server_addr = 3;
+    repeated string game_version_list = 4;
 }
 
 message RegisterServerRsp {
-  string app_id = 1;
-  uint32 gs_id  = 2;
+    string app_id = 1;
+    uint32 gs_id = 2;
 }
 
 message CancelServerReq {
-  string server_type = 1;
-  string app_id      = 2;
+    string server_type = 1;
+    string app_id = 2;
 }
 
 message KeepaliveServerReq {
-  string server_type = 1;
-  string app_id      = 2;
-  uint32 load_count  = 3;
+    string server_type = 1;
+    string app_id = 2;
+    uint32 load_count = 3;
 }
 
 message GetGateServerAddrReq {
-  string version = 1;
+    string game_version = 1;
 }
 
 message GetMainGameServerAppIdRsp {
-  string app_id = 1;
+    string app_id = 1;
 }
 
 message RegionEc2b {
-  bytes data = 1;
+    bytes data = 1;
 }
 
 message GateServerAddr {
-  string kcp_addr = 1;
-  uint32 kcp_port = 2;
-  string mq_addr  = 3;
-  uint32 mq_port  = 4;
+    string kcp_addr = 1;
+    uint32 kcp_port = 2;
+    string mq_addr = 3;
+    uint32 mq_port = 4;
 }
 
 message GateServerInfo {
-  string app_id  = 1;
-  string mq_addr = 2;
-  uint32 mq_port = 3;
+    string app_id = 1;
+    string mq_addr = 2;
+    uint32 mq_port = 3;
 }
 
 message GateServerInfoList {
-  repeated GateServerInfo gate_server_info_list = 1;
+    repeated GateServerInfo gate_server_info_list = 1;
+}
+
+message GlobalGsOnlineMap {
+    map<uint32, string> online_map = 1;
+}
+
+message StopServerInfo {
+    bool stop_server = 1;
+    uint32 start_time = 2;
+    uint32 end_time = 3;
+}
+
+message GetWhiteListRsp {
+    repeated string ip_addr_list = 1;
+}
+
+message SetWhiteListReq {
+    bool is_add = 1;
+    string ip_addr = 2;
+}
+
+message GetNextUidRsp {
+    uint32 uid = 1;
+}
+
+message ServerDispatchCancelReq {
+    string app_version = 1;
 }

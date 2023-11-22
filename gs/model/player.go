@@ -26,65 +26,138 @@ type GameObject interface {
 type Player struct {
 	// 离线数据 请尽量不要定义接口等复杂数据结构
 	ID              primitive.ObjectID `bson:"_id,omitempty"`
-	PlayerID        uint32             `bson:"PlayerID"` // 玩家uid
+	PlayerId        uint32             `bson:"player_id"` // 玩家uid
 	NickName        string             // 昵称
-	Signature       string             // 签名
 	HeadImage       uint32             // 头像
-	Birthday        []uint8            // 生日
-	NameCard        uint32             // 当前名片
-	NameCardList    []uint32           // 已解锁名片列表
-	FriendList      map[uint32]bool    // 好友uid列表
-	FriendApplyList map[uint32]bool    // 好友申请uid列表
-	OfflineTime     uint32             // 离线时间点
+	Signature       string             // 签名
+	IsBorn          bool               // 是否完成开场动画
 	OnlineTime      uint32             // 上线时间点
+	OfflineTime     uint32             // 离线时间点
 	TotalOnlineTime uint32             // 累计在线时长
-	PropertiesMap   map[uint16]uint32  // 玩家自身相关的一些属性
-	FlyCloakList    []uint32           // 风之翼列表
-	CostumeList     []uint32           // 角色衣装列表
-	SceneId         uint32             // 场景
-	IsGM            uint8              // 管理员权限等级
-	SafePos         *Vector            // 在陆地时的坐标
-	Pos             *Vector            // 坐标
-	Rot             *Vector            // 朝向
+	PropMap         map[uint32]uint32  // 玩家属性表
+	OpenStateMap    map[uint32]uint32  // 功能开放状态
+	SceneId         uint32             // 存档场景
+	Pos             *Vector            // 存档坐标 非实时
+	Rot             *Vector            // 存档朝向 非实时
+	CmdPerm         uint8              // 玩家命令权限等级
+	DbSocial        *DbSocial          // 社交
 	DbItem          *DbItem            // 道具
+	DbAvatar        *DbAvatar          // 角色
+	DbTeam          *DbTeam            // 队伍
 	DbWeapon        *DbWeapon          // 武器
 	DbReliquary     *DbReliquary       // 圣遗物
-	DbTeam          *DbTeam            // 队伍
-	DbAvatar        *DbAvatar          // 角色
 	DbGacha         *DbGacha           // 卡池
 	DbQuest         *DbQuest           // 任务
 	DbWorld         *DbWorld           // 大世界
 	// 在线数据 请随意 记得加忽略字段的tag
-	LastSaveTime          uint32                                   `bson:"-" msgpack:"-"` // 上一次保存时间
-	EnterSceneToken       uint32                                   `bson:"-" msgpack:"-"` // 世界进入令牌
+	LastSaveTime          uint32                                   `bson:"-" msgpack:"-"` // 上一次存档保存时间
 	DbState               int                                      `bson:"-" msgpack:"-"` // 数据库存档状态
-	WorldId               uint32                                   `bson:"-" msgpack:"-"` // 所在的世界id
+	WorldId               uint64                                   `bson:"-" msgpack:"-"` // 所在的世界id
 	GameObjectGuidCounter uint64                                   `bson:"-" msgpack:"-"` // 游戏对象guid计数器
 	LastKeepaliveTime     uint32                                   `bson:"-" msgpack:"-"` // 上一次保持活跃时间
-	ClientTime            uint32                                   `bson:"-" msgpack:"-"` // 客户端的本地时钟
-	ClientRTT             uint32                                   `bson:"-" msgpack:"-"` // 客户端往返时延
+	ClientTime            uint32                                   `bson:"-" msgpack:"-"` // 客户端本地时钟
+	ClientRTT             uint32                                   `bson:"-" msgpack:"-"` // 客户端网络往返时延
 	GameObjectGuidMap     map[uint64]GameObject                    `bson:"-" msgpack:"-"` // 游戏对象guid映射表
 	Online                bool                                     `bson:"-" msgpack:"-"` // 在线状态
 	Pause                 bool                                     `bson:"-" msgpack:"-"` // 暂停状态
 	SceneJump             bool                                     `bson:"-" msgpack:"-"` // 是否场景切换
 	SceneLoadState        int                                      `bson:"-" msgpack:"-"` // 场景加载状态
+	SceneEnterReason      uint32                                   `bson:"-" msgpack:"-"` // 场景进入原因
 	CoopApplyMap          map[uint32]int64                         `bson:"-" msgpack:"-"` // 敲门申请的玩家uid及时间
-	StaminaInfo           *StaminaInfo                             `bson:"-" msgpack:"-"` // 耐力临时数据
-	VehicleInfo           *VehicleInfo                             `bson:"-" msgpack:"-"` // 载具临时数据
+	StaminaInfo           *StaminaInfo                             `bson:"-" msgpack:"-"` // 耐力在线数据
+	VehicleInfo           *VehicleInfo                             `bson:"-" msgpack:"-"` // 载具在线数据
 	ClientSeq             uint32                                   `bson:"-" msgpack:"-"` // 客户端发包请求的序号
 	CombatInvokeHandler   *InvokeHandler[proto.CombatInvokeEntry]  `bson:"-" msgpack:"-"` // combat转发器
 	AbilityInvokeHandler  *InvokeHandler[proto.AbilityInvokeEntry] `bson:"-" msgpack:"-"` // ability转发器
 	GateAppId             string                                   `bson:"-" msgpack:"-"` // 网关服务器的appid
-	FightAppId            string                                   `bson:"-" msgpack:"-"` // 战斗服务器的appid
+	MultiServerAppId      string                                   `bson:"-" msgpack:"-"` // 多功能服务器的appid
 	GCGCurGameGuid        uint32                                   `bson:"-" msgpack:"-"` // GCG玩家所在的游戏guid
 	GCGInfo               *GCGInfo                                 `bson:"-" msgpack:"-"` // 七圣召唤信息
+	XLuaDebug             bool                                     `bson:"-" msgpack:"-"` // 是否开启客户端XLUA调试
+	NetFreeze             bool                                     `bson:"-" msgpack:"-"` // 客户端网络上下行冻结状态
+	CommandAssignUid      uint32                                   `bson:"-" msgpack:"-"` // 命令指定uid
+	WeatherInfo           *WeatherInfo                             `bson:"-" msgpack:"-"` // 天气信息
+	ClientVersion         int                                      `bson:"-" msgpack:"-"` // 玩家在线的客户端版本
+	OfflineClear          bool                                     `bson:"-" msgpack:"-"` // 是否离线时清除账号数据
+	NotSave               bool                                     `bson:"-" msgpack:"-"` // 是否离线回档
+	Speed                 *Vector                                  `bson:"-" msgpack:"-"` // 速度
+	WuDi                  bool                                     `bson:"-" msgpack:"-"` // 是否开启玩家角色无敌
+	EnergyInf             bool                                     `bson:"-" msgpack:"-"` // 是否开启玩家角色无限能量
+	StaminaInf            bool                                     `bson:"-" msgpack:"-"` // 是否开启玩家无限耐力
+	IsInMp                bool                                     `bson:"-" msgpack:"-"` // 是否位于多人世界
+	MpSceneId             uint32                                   `bson:"-" msgpack:"-"` // 多人世界场景
+	MpPos                 *Vector                                  `bson:"-" msgpack:"-"` // 多人世界坐标
+	MpRot                 *Vector                                  `bson:"-" msgpack:"-"` // 多人世界朝向
 	// 特殊数据
-	ChatMsgMap map[uint32][]*ChatMsg `bson:"-" msgpack:"-"` // 聊天信息 数据量偏大 只从db读写 不保存到redis
+	ChatMsgMap           map[uint32][]*ChatMsg `bson:"-" msgpack:"-"` // 聊天信息 数据量偏大 只从db读写 不保存到redis
+	RemoteWorldPlayerNum uint32                `bson:"-"`             // 远程展示世界内人数 在线同步到redis 不保存到db
+}
+
+// 存档场景
+
+func (p *Player) GetSceneId() uint32 {
+	if p.IsInMp {
+		return p.MpSceneId
+	} else {
+		return p.SceneId
+	}
+}
+
+func (p *Player) SetSceneId(sceneId uint32) {
+	if p.IsInMp {
+		p.MpSceneId = sceneId
+	} else {
+		p.SceneId = sceneId
+	}
+}
+
+// 存档坐标
+
+func (p *Player) GetPos() *Vector {
+	if p.IsInMp {
+		return &Vector{X: p.MpPos.X, Y: p.MpPos.Y, Z: p.MpPos.Z}
+	} else {
+		return &Vector{X: p.Pos.X, Y: p.Pos.Y, Z: p.Pos.Z}
+	}
+}
+
+func (p *Player) SetPos(pos *Vector) {
+	if p.IsInMp {
+		p.MpPos.X = pos.X
+		p.MpPos.Y = pos.Y
+		p.MpPos.Z = pos.Z
+	} else {
+		p.Pos.X = pos.X
+		p.Pos.Y = pos.Y
+		p.Pos.Z = pos.Z
+	}
+}
+
+// 存档朝向
+
+func (p *Player) GetRot() *Vector {
+	if p.IsInMp {
+		return &Vector{X: p.MpRot.X, Y: p.MpRot.Y, Z: p.MpRot.Z}
+	} else {
+		return &Vector{X: p.Rot.X, Y: p.Rot.Y, Z: p.Rot.Z}
+	}
+}
+
+func (p *Player) SetRot(rot *Vector) {
+	if p.IsInMp {
+		p.MpRot.X = rot.X
+		p.MpRot.Y = rot.Y
+		p.MpRot.Z = rot.Z
+	} else {
+		p.Rot.X = rot.X
+		p.Rot.Y = rot.Y
+		p.Rot.Z = rot.Z
+	}
 }
 
 func (p *Player) GetNextGameObjectGuid() uint64 {
 	p.GameObjectGuidCounter++
-	return uint64(p.PlayerID)<<32 + p.GameObjectGuidCounter
+	return uint64(p.PlayerId)<<32 + p.GameObjectGuidCounter
 }
 
 func (p *Player) InitOnlineData() {
@@ -96,6 +169,22 @@ func (p *Player) InitOnlineData() {
 	p.CombatInvokeHandler = NewInvokeHandler[proto.CombatInvokeEntry]()
 	p.AbilityInvokeHandler = NewInvokeHandler[proto.AbilityInvokeEntry]()
 	p.GCGInfo = NewGCGInfo() // 临时测试用数据
+	p.WeatherInfo = NewWeatherInfo()
+
+	dbAvatar := p.GetDbAvatar()
+	dbAvatar.InitDbAvatar(p)
+	dbReliquary := p.GetDbReliquary()
+	dbReliquary.InitDbReliquary(p)
+	dbWeapon := p.GetDbWeapon()
+	dbWeapon.InitDbWeapon(p)
+	dbItem := p.GetDbItem()
+	dbItem.InitDbItem(p)
+}
+
+type Vector struct {
+	X float64
+	Y float64
+	Z float64
 }
 
 // 多人世界网络同步包转发器
@@ -134,9 +223,10 @@ func (i *InvokeHandler[T]) AddEntry(forward proto.ForwardType, entry *T) {
 		i.EntryListForwardAllExceptCur = append(i.EntryListForwardAllExceptCur, entry)
 	case proto.ForwardType_FORWARD_TO_HOST:
 		i.EntryListForwardHost = append(i.EntryListForwardHost, entry)
+	case proto.ForwardType_FORWARD_TO_PEER:
+		i.EntryListForwardAllExceptCur = append(i.EntryListForwardAllExceptCur, entry)
 	case proto.ForwardType_FORWARD_ONLY_SERVER:
 		i.EntryListForwardServer = append(i.EntryListForwardServer, entry)
-		// logger.Error("forward server entry: %v", entry)
 	default:
 		logger.Error("forward type: %v, entry: %v", forward, entry)
 	}

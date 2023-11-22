@@ -1,20 +1,20 @@
 package model
 
 import (
-	"hk4e/common/constant"
 	"hk4e/gdconf"
 	"hk4e/pkg/logger"
 )
 
 type DbWeapon struct {
-	WeaponMap map[uint64]*Weapon // 武器背包
+	WeaponMap map[uint64]*Weapon // 武器集合
 }
 
 func (p *Player) GetDbWeapon() *DbWeapon {
 	if p.DbWeapon == nil {
-		p.DbWeapon = &DbWeapon{
-			WeaponMap: make(map[uint64]*Weapon),
-		}
+		p.DbWeapon = new(DbWeapon)
+	}
+	if p.DbWeapon.WeaponMap == nil {
+		p.DbWeapon.WeaponMap = make(map[uint64]*Weapon)
 	}
 	return p.DbWeapon
 }
@@ -32,7 +32,19 @@ type Weapon struct {
 	Guid        uint64   `bson:"-" msgpack:"-"`
 }
 
-func (w *DbWeapon) InitAllWeapon(player *Player) {
+func (w *DbWeapon) GetWeaponById(weaponId uint64) *Weapon {
+	return w.WeaponMap[weaponId]
+}
+
+func (w *DbWeapon) GetWeaponMap() map[uint64]*Weapon {
+	return w.WeaponMap
+}
+
+func (w *DbWeapon) GetWeaponMapLen() int {
+	return len(w.WeaponMap)
+}
+
+func (w *DbWeapon) InitDbWeapon(player *Player) {
 	for _, weapon := range w.WeaponMap {
 		w.InitWeapon(player, weapon)
 	}
@@ -44,7 +56,7 @@ func (w *DbWeapon) InitWeapon(player *Player, weapon *Weapon) {
 	w.WeaponMap[weapon.WeaponId] = weapon
 	if weapon.AvatarId != 0 {
 		dbAvatar := player.GetDbAvatar()
-		avatar := dbAvatar.AvatarMap[weapon.AvatarId]
+		avatar := dbAvatar.GetAvatarById(weapon.AvatarId)
 		avatar.EquipGuidMap[weapon.Guid] = weapon.Guid
 		avatar.EquipWeapon = weapon
 	}
@@ -63,10 +75,6 @@ func (w *DbWeapon) GetWeapon(weaponId uint64) *Weapon {
 }
 
 func (w *DbWeapon) AddWeapon(player *Player, itemId uint32, weaponId uint64) {
-	// 校验背包武器容量
-	if len(w.WeaponMap) > constant.STORE_PACK_LIMIT_WEAPON {
-		return
-	}
 	itemDataConfig := gdconf.GetItemDataById(int32(itemId))
 	if itemDataConfig == nil {
 		logger.Error("weapon config is nil, itemId: %v", itemId)
@@ -87,7 +95,6 @@ func (w *DbWeapon) AddWeapon(player *Player, itemId uint32, weaponId uint64) {
 		weapon.AffixIdList = append(weapon.AffixIdList, uint32(skillAffix))
 	}
 	w.InitWeapon(player, weapon)
-	w.WeaponMap[weaponId] = weapon
 }
 
 func (w *DbWeapon) CostWeapon(player *Player, weaponId uint64) uint64 {

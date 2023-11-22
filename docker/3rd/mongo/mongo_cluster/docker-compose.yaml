@@ -18,7 +18,7 @@ services:
       resources:
         limits:
           cpus: '4.00'
-          memory: 512M
+          memory: 2048M
 
   mongo_shard2:
     restart: always
@@ -38,7 +38,7 @@ services:
       resources:
         limits:
           cpus: '4.00'
-          memory: 512M
+          memory: 2048M
 
   mongo_shard3:
     restart: always
@@ -58,7 +58,7 @@ services:
       resources:
         limits:
           cpus: '4.00'
-          memory: 512M
+          memory: 2048M
 
   mongo_config1:
     restart: always
@@ -81,7 +81,7 @@ services:
       resources:
         limits:
           cpus: '1.00'
-          memory: 256M
+          memory: 512M
 
   mongo_config2:
     restart: always
@@ -104,7 +104,7 @@ services:
       resources:
         limits:
           cpus: '1.00'
-          memory: 256M
+          memory: 512M
 
   mongo_config3:
     restart: always
@@ -127,7 +127,7 @@ services:
       resources:
         limits:
           cpus: '1.00'
-          memory: 256M
+          memory: 512M
 
   mongo_mongos1:
     restart: always
@@ -149,7 +149,7 @@ services:
       resources:
         limits:
           cpus: '2.00'
-          memory: 128M
+          memory: 1024M
 
   mongo_mongos2:
     restart: always
@@ -171,7 +171,7 @@ services:
       resources:
         limits:
           cpus: '2.00'
-          memory: 128M
+          memory: 1024M
 
   mongo_mongos3:
     restart: always
@@ -193,4 +193,4 @@ services:
       resources:
         limits:
           cpus: '2.00'
-          memory: 128M
+          memory: 1024M

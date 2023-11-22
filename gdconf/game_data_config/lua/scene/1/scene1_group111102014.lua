@@ -157,7 +157,6 @@ function action_EVENT_TIME_AXIS_PASS_14010(context, evt)
 			ScriptLib.ChangeGroupVariableValue(context, "active_count", -1)
 		end
 	end
-	
 	return 0
 end
 

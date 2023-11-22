@@ -15,11 +15,14 @@ var (
 	config = flag.String("config", "application.toml", "config file")
 )
 
+var VERSION = "UNKNOWN"
+
 func main() {
 	flag.Parse()
 	go func() {
 		_ = statsviz_serve.Serve("0.0.0.0:4567")
 	}()
+	app.APPVERSION = VERSION
 	err := app.Run(context.TODO(), *config)
 	if err != nil {
 		fmt.Println(err)

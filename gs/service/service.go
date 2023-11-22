@@ -10,7 +10,7 @@ import (
 
 type Service struct{}
 
-func NewService(conn *nats.Conn) (*Service, error) {
+func NewService(conn *nats.Conn, gsId uint32) (*Service, error) {
 	enc, err := nats.NewEncodedConn(conn, protobuf.PROTOBUF_ENCODER)
 	if err != nil {
 		return nil, err
@@ -20,7 +20,7 @@ func NewService(conn *nats.Conn) (*Service, error) {
 		return nil, err
 	}
 	gs := &GMService{}
-	_, err = api.RegisterGMNATSRPCServer(svr, gs)
+	_, err = api.RegisterGMNATSRPCServer(svr, gs, natsrpc.WithServiceID(gsId))
 	if err != nil {
 		return nil, err
 	}

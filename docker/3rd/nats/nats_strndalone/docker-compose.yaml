@@ -5,8 +5,8 @@ services:
     image: nats:2.7.3
     container_name: nats
     ports:
-      - "4224:4222/tcp"
-      - "8224:8222/tcp"
+      - "4222:4222/tcp"
+      - "8222:8222/tcp"
     environment:
       TZ: Asia/Shanghai
     volumes:

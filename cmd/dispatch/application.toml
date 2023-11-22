@@ -1,5 +1,12 @@
 http_port = 8080
 
+[hk4e]
+dispatch_url = "https://hk4e.flswld.com/query_cur_region" # 二级dispatch地址 将域名改为dispatch的外网地址
+login_sdk_account_key = "" # sdk服务器账号验证的签名密钥
+forward_mode_enable = false # 是否开启网关到机器人的转发功能
+forward_region_url = "" # 转发的一级dispatch地址
+forward_dispatch_url = "" # 转发的二级dispatch地址
+
 [logger]
 level = "DEBUG"
 mode = "CONSOLE"

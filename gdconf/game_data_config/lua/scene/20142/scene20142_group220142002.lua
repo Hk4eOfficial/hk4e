@@ -98,88 +98,52 @@ suites = {
 function action_EVENT_SELECT_OPTION_2003(context, evt)
 	if evt.param2 == 606 then
 		ScriptLib.SetGadgetStateByConfigId(context,2002, GadgetState.Default)
-		
 		ScriptLib.InitTimeAxis(context, "temp", {2,7}, false)
-		
 		ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 605)
-		
 		ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 606)
-		
 		ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 607)
-		
 		ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 615)
-		
 		ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 616)
 	else
 		if evt.param2 == 605 then
 			ScriptLib.SetGadgetStateByConfigId(context,2002, GadgetState.Default)
-			
 			ScriptLib.InitTimeAxis(context, "temp2", {2,7}, false)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 605)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 606)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 607)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 615)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 616)
 		end
-		
 		if evt.param2 == 607 then
 			ScriptLib.SetGadgetStateByConfigId(context,2002, GadgetState.Default)
-			
 			ScriptLib.InitTimeAxis(context, "temp3", {2,3,7}, false)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 605)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 606)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 607)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 615)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 616)
 		end
-		
 		if evt.param2 == 615 then
 			ScriptLib.SetGadgetStateByConfigId(context,2002, GadgetState.Default)
-			
 			ScriptLib.InitTimeAxis(context, "temp4", {2,7}, false)
-			
 			ScriptLib.SetGroupVariableValue(context, "room2", 1)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 605)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 606)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 607)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 615)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 616)
 		end
-		
 		if evt.param2 == 616 then
 			ScriptLib.SetGadgetStateByConfigId(context,2002, GadgetState.Default)
-			
 			ScriptLib.InitTimeAxis(context, "temp5", {2,3,7}, false)
-			
 			ScriptLib.SetGroupVariableValue(context, "room3", 1)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 605)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 606)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 607)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 615)
-			
 			ScriptLib.DelWorktopOptionByGroupId(context, 0, 2001, 616)
 		end
 	end
-	
 	return 0
 end
 
@@ -187,10 +151,8 @@ end
 function action_EVENT_TIME_AXIS_PASS_2004(context, evt)
 	if evt.source_name == "temp" and evt.param1 == 1 then
 		ScriptLib.ChangeToTargetLevelTag(context, 25)
-		
 		ScriptLib.SetGadgetStateByConfigId(context,2002, GadgetState.GearStart)
 	end
-	
 	if evt.source_name == "temp" and evt.param1 == 2 then
 		if ScriptLib.GetGroupVariableValue(context, "room2") == 1 and ScriptLib.GetGroupVariableValue(context, "room3") == 1 then
 			ScriptLib.SetWorktopOptionsByGroupId(context, 0, 2001, {606,605,607})
@@ -206,7 +168,6 @@ function action_EVENT_TIME_AXIS_PASS_2004(context, evt)
 			end
 		end
 	end
-	
 	return 0
 end
 
@@ -214,10 +175,8 @@ end
 function action_EVENT_TIME_AXIS_PASS_2005(context, evt)
 	if evt.source_name == "temp2" and evt.param1 == 1 then
 		ScriptLib.ChangeToTargetLevelTag(context, 24)
-		
 		ScriptLib.SetGadgetStateByConfigId(context,2002, GadgetState.GearStart)
 	end
-	
 	if evt.source_name == "temp2" and evt.param1 == 2 then
 		if ScriptLib.GetGroupVariableValue(context, "room3") == 1 then
 			ScriptLib.SetWorktopOptionsByGroupId(context, 0, 2001, {606,605,607})
@@ -225,7 +184,6 @@ function action_EVENT_TIME_AXIS_PASS_2005(context, evt)
 			ScriptLib.SetWorktopOptionsByGroupId(context, 0, 2001, {606,605,616})
 		end
 	end
-	
 	return 0
 end
 
@@ -234,11 +192,9 @@ function action_EVENT_TIME_AXIS_PASS_2006(context, evt)
 	if evt.source_name == "temp3" and evt.param1 == 1 then
 		ScriptLib.ChangeToTargetLevelTag(context, 26)
 	end
-	
 	if evt.source_name == "temp3" and evt.param1 == 2 then
 		ScriptLib.SetGadgetStateByConfigId(context,2002, GadgetState.GearStart)
 	end
-	
 	if evt.source_name == "temp3" and evt.param1 == 3 then
 		if ScriptLib.GetGroupVariableValue(context, "room2") == 1 then
 			ScriptLib.SetWorktopOptionsByGroupId(context, 0, 2001, {606,605,607})
@@ -246,7 +202,6 @@ function action_EVENT_TIME_AXIS_PASS_2006(context, evt)
 			ScriptLib.SetWorktopOptionsByGroupId(context, 0, 2001, {606,615,607})
 		end
 	end
-	
 	return 0
 end
 
@@ -254,10 +209,8 @@ end
 function action_EVENT_TIME_AXIS_PASS_2007(context, evt)
 	if evt.source_name == "temp4" and evt.param1 == 1 then
 		ScriptLib.ChangeToTargetLevelTag(context, 24)
-		
 		ScriptLib.SetGadgetStateByConfigId(context,2002, GadgetState.GearStart)
 	end
-	
 	if evt.source_name == "temp4" and evt.param1 == 2 then
 		if ScriptLib.GetGroupVariableValue(context, "room3") == 1 then
 			ScriptLib.SetWorktopOptionsByGroupId(context, 0, 2001, {606,605,607})
@@ -265,7 +218,6 @@ function action_EVENT_TIME_AXIS_PASS_2007(context, evt)
 			ScriptLib.SetWorktopOptionsByGroupId(context, 0, 2001, {606,605,616})
 		end
 	end
-	
 	return 0
 end
 
@@ -274,11 +226,9 @@ function action_EVENT_TIME_AXIS_PASS_2008(context, evt)
 	if evt.source_name == "temp5" and evt.param1 == 1 then
 		ScriptLib.ChangeToTargetLevelTag(context, 26)
 	end
-	
 	if evt.source_name == "temp5" and evt.param1 == 2 then
 		ScriptLib.SetGadgetStateByConfigId(context,2002, GadgetState.GearStart)
 	end
-	
 	if evt.source_name == "temp5" and evt.param1 == 3 then
 		if ScriptLib.GetGroupVariableValue(context, "room2") == 1 then
 			ScriptLib.SetWorktopOptionsByGroupId(context, 0, 2001, {606,605,607})
@@ -286,7 +236,6 @@ function action_EVENT_TIME_AXIS_PASS_2008(context, evt)
 			ScriptLib.SetWorktopOptionsByGroupId(context, 0, 2001, {606,615,607})
 		end
 	end
-	
 	return 0
 end
 
@@ -294,28 +243,19 @@ end
 function action_EVENT_SELECT_OPTION_2009(context, evt)
 	if evt.param2 == 623 and ScriptLib.GetGroupVariableValue(context, "message") == 0 then
 		ScriptLib.ShowReminder(context, 201420101)
-		
 		ScriptLib.InitTimeAxis(context, "message1", {3}, false)
-		
 		ScriptLib.SetGroupVariableValue(context, "message", 1)
 	end
-	
 	if evt.param2 == 624 and ScriptLib.GetGroupVariableValue(context, "message") == 0 then
 		ScriptLib.ShowReminder(context, 201420101)
-		
 		ScriptLib.InitTimeAxis(context, "message1", {3}, false)
-		
 		ScriptLib.SetGroupVariableValue(context, "message", 1)
 	end
-	
 	if evt.param2 == 625 and ScriptLib.GetGroupVariableValue(context, "message") == 0 then
 		ScriptLib.ShowReminder(context, 201420101)
-		
 		ScriptLib.InitTimeAxis(context, "message1", {3}, false)
-		
 		ScriptLib.SetGroupVariableValue(context, "message", 1)
 	end
-	
 	return 0
 end
 
@@ -324,7 +264,6 @@ function action_EVENT_TIME_AXIS_PASS_2010(context, evt)
 	if evt.source_name == "message1" and evt.param1 == 1 and ScriptLib.GetGroupVariableValue(context, "message") == 1 then
 		ScriptLib.SetGroupVariableValue(context, "message", 0)
 	end
-	
 	return 0
 end
 
@@ -498,7 +437,6 @@ end
 -- 触发操作
 function action_EVENT_GROUP_LOAD_2017(context, evt)
 	ScriptLib.SetGroupVariableValue(context, "message", 0)
-	
 	if ScriptLib.GetGroupVariableValue(context, "open") == 1 and ScriptLib.GetGroupVariableValue(context, "room2") == 1 and ScriptLib.GetGroupVariableValue(context, "room3") == 1 then
 		ScriptLib.SetWorktopOptionsByGroupId(context, 0, 2001, {606,605,607})
 	else
@@ -518,7 +456,6 @@ function action_EVENT_GROUP_LOAD_2017(context, evt)
 			end
 		end
 	end
-	
 	return 0
 end
 
@@ -553,6 +490,5 @@ function action_EVENT_SELECT_OPTION_2019(context, evt)
 			end
 		end
 	end
-	
 	return 0
 end

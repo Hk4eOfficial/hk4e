@@ -7,11 +7,13 @@ import (
 	"hk4e/pkg/logger"
 )
 
+// hk4e游戏协议编解码
+
 /*
 										原神KCP协议(带*为xor加密数据)
 0			1			2					4											8(字节)
 +---------------------------------------------------------------------------------------+
-|											conv										|
+|					sessionId(le)			|					conv(le)				|
 +---------------------------------------------------------------------------------------+
 |	cmd		|	frg		|		wnd			|					ts						|
 +---------------------------------------------------------------------------------------+
@@ -26,27 +28,23 @@ import (
 */
 
 type KcpMsg struct {
-	ConvId    uint64
+	SessionId uint32
 	CmdId     uint16
 	HeadData  []byte
 	ProtoData []byte
 }
 
-func DecodeBinToPayload(data []byte, dataBuf *[]byte, convId uint64, kcpMsgList *[]*KcpMsg, xorKey []byte) {
+func DecodeBinToPayload(data []byte, sessionId uint32, kcpMsgList *[]*KcpMsg, xorKey []byte) {
 	// xor解密
 	endec.Xor(data, xorKey)
-	DecodeLoop(data, dataBuf, convId, kcpMsgList)
+	DecodeLoop(data, sessionId, kcpMsgList)
+	return
 }
 
-func DecodeLoop(data []byte, dataBuf *[]byte, convId uint64, kcpMsgList *[]*KcpMsg) {
-	if len(*dataBuf) != 0 {
-		// 取出之前的缓冲区数据
-		data = append(*dataBuf, data...)
-		*dataBuf = make([]byte, 0, 1500)
-	}
+func DecodeLoop(data []byte, sessionId uint32, kcpMsgList *[]*KcpMsg) {
 	// 长度太短
 	if len(data) < 12 {
-		logger.Debug("packet len less 12 byte")
+		logger.Error("packet len less than 12 byte")
 		return
 	}
 	// 头部幻数错误
@@ -66,13 +64,8 @@ func DecodeLoop(data []byte, dataBuf *[]byte, convId uint64, kcpMsgList *[]*KcpM
 		logger.Error("packet len too long")
 		return
 	}
-	haveMorePacket := false
-	if len(data) > packetLen {
-		// 有不止一个包
-		haveMorePacket = true
-	} else if len(data) < packetLen {
-		// 这一次没收够 放入缓冲区
-		*dataBuf = append(*dataBuf, data...)
+	if len(data) < packetLen {
+		logger.Error("packet len not enough")
 		return
 	}
 	// 尾部幻数错误
@@ -86,14 +79,14 @@ func DecodeLoop(data []byte, dataBuf *[]byte, convId uint64, kcpMsgList *[]*KcpM
 	protoData := data[10+int(headLen) : 10+int(headLen)+int(protoLen)]
 	// 返回数据
 	kcpMsg := new(KcpMsg)
-	kcpMsg.ConvId = convId
+	kcpMsg.SessionId = sessionId
 	kcpMsg.CmdId = cmdId
 	kcpMsg.HeadData = headData
 	kcpMsg.ProtoData = protoData
 	*kcpMsgList = append(*kcpMsgList, kcpMsg)
-	// 递归解析
-	if haveMorePacket {
-		DecodeLoop(data[packetLen:], dataBuf, convId, kcpMsgList)
+	// 有不止一个包 递归解析
+	if len(data) > packetLen {
+		DecodeLoop(data[packetLen:], sessionId, kcpMsgList)
 	}
 }
 
@@ -104,7 +97,13 @@ func EncodePayloadToBin(kcpMsg *KcpMsg, xorKey []byte) (bin []byte) {
 	if kcpMsg.ProtoData == nil {
 		kcpMsg.ProtoData = make([]byte, 0)
 	}
-	bin = make([]byte, len(kcpMsg.HeadData)+len(kcpMsg.ProtoData)+12)
+	// 检查长度
+	packetLen := len(kcpMsg.HeadData) + len(kcpMsg.ProtoData) + 12
+	if packetLen > PacketMaxLen {
+		logger.Error("packet len too long")
+		return make([]byte, 0)
+	}
+	bin = make([]byte, packetLen)
 	// 头部幻数
 	bin[0] = 0x45
 	bin[1] = 0x67

@@ -1,38 +1,27 @@
 package gdconf
 
 import (
-	"fmt"
-
 	"hk4e/pkg/logger"
-
-	"github.com/jszwec/csvutil"
-	"github.com/mroth/weightedrand"
 )
 
 // ReliquaryAffixData 圣遗物追加属性配置表
 type ReliquaryAffixData struct {
-	AppendPropId      int32 `csv:"AppendPropId"`                // 追加属性ID
-	AppendPropDepotId int32 `csv:"AppendPropDepotId,omitempty"` // 追加属性库ID
-	PropType          int32 `csv:"PropType,omitempty"`          // 属性类别
-	RandomWeight      int32 `csv:"RandomWeight,omitempty"`      // 随机权重
+	AppendPropId      int32 `csv:"追加属性ID"`
+	AppendPropDepotId int32 `csv:"追加属性库ID,omitempty"`
+	PropType          int32 `csv:"属性类别,omitempty"`
+	RandomWeight      int32 `csv:"随机权重,omitempty"`
 }
 
 func (g *GameDataConfig) loadReliquaryAffixData() {
 	g.ReliquaryAffixDataMap = make(map[int32]map[int32]*ReliquaryAffixData)
-	data := g.readCsvFileData("ReliquaryAffixData.csv")
-	var reliquaryAffixDataList []*ReliquaryAffixData
-	err := csvutil.Unmarshal(data, &reliquaryAffixDataList)
-	if err != nil {
-		info := fmt.Sprintf("parse file error: %v", err)
-		panic(info)
-	}
+	reliquaryAffixDataList := make([]*ReliquaryAffixData, 0)
+	readTable[ReliquaryAffixData](g.txtPrefix+"ReliquaryAffixData.txt", &reliquaryAffixDataList)
 	for _, reliquaryAffixData := range reliquaryAffixDataList {
 		// 通过主属性库ID找到
 		_, ok := g.ReliquaryAffixDataMap[reliquaryAffixData.AppendPropDepotId]
 		if !ok {
 			g.ReliquaryAffixDataMap[reliquaryAffixData.AppendPropDepotId] = make(map[int32]*ReliquaryAffixData)
 		}
-		// list -> map
 		g.ReliquaryAffixDataMap[reliquaryAffixData.AppendPropDepotId][reliquaryAffixData.AppendPropId] = reliquaryAffixData
 	}
 	logger.Info("ReliquaryAffixData count: %v", len(g.ReliquaryAffixDataMap))
@@ -44,35 +33,6 @@ func GetReliquaryAffixDataByDepotIdAndPropId(appendPropDepotId int32, appendProp
 		return nil
 	}
 	return value[appendPropId]
-}
-
-func GetReliquaryAffixDataRandomByDepotId(appendPropDepotId int32, excludeTypeList ...uint32) *ReliquaryAffixData {
-	appendPropMap, exist := CONF.ReliquaryAffixDataMap[appendPropDepotId]
-	if !exist {
-		return nil
-	}
-	choices := make([]weightedrand.Choice, 0, len(appendPropMap))
-	for _, data := range appendPropMap {
-		isBoth := false
-		// 排除列表中的属性类型是否相同
-		for _, propType := range excludeTypeList {
-			if propType == uint32(data.PropType) {
-				isBoth = true
-				break
-			}
-		}
-		if isBoth {
-			continue
-		}
-		choices = append(choices, weightedrand.NewChoice(data, uint(data.RandomWeight)))
-	}
-	chooser, err := weightedrand.NewChooser(choices...)
-	if err != nil {
-		logger.Error("reliquary append random error: %v", err)
-		return nil
-	}
-	result := chooser.Pick()
-	return result.(*ReliquaryAffixData)
 }
 
 func GetReliquaryAffixDataMap() map[int32]map[int32]*ReliquaryAffixData {

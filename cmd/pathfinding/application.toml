@@ -1,8 +1,0 @@
-[logger]
-level = "DEBUG"
-mode = "CONSOLE"
-track = true
-max_size = 10485760
-
-[mq]
-nats_url = "nats://nats:4222"

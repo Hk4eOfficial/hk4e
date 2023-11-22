@@ -13,6 +13,8 @@ var (
 	config = flag.String("config", "application.toml", "config file")
 )
 
+var VERSION = "UNKNOWN"
+
 func main() {
 	rootCmd := &cobra.Command{
 		Use:          "hk4e",
@@ -23,10 +25,11 @@ func main() {
 		NodeCmd(),
 		DispatchCmd(),
 		GateCmd(),
-		FightCmd(),
-		PathfindingCmd(),
 		GSCmd(),
+		MultiCmd(),
 		GMCmd(),
+		RobotCmd(),
+		NatsCmd(),
 	)
 
 	if err := rootCmd.Execute(); err != nil {

@@ -1,65 +1,101 @@
 package controller
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
+	"hk4e/common/config"
 	"hk4e/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
+// gate请求错误响应
+func (c *Controller) gateReqErrorRsp(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"retcode": -101, "message": "系统错误", "data": nil})
+}
+
 type TokenVerifyReq struct {
-	AccountId    string `json:"accountId"`
-	AccountToken string `json:"accountToken"`
+	AppID      uint32 `json:"app_id"`
+	ChannelID  uint32 `json:"channel_id"`
+	OpenID     string `json:"open_id"`
+	ComboToken string `json:"combo_token"`
+	Sign       string `json:"sign"`
+	Region     string `json:"region"`
 }
 
 type TokenVerifyRsp struct {
-	Valid         bool   `json:"valid"`
-	Forbid        bool   `json:"forbid"`
-	ForbidEndTime uint32 `json:"forbidEndTime"`
-	PlayerID      uint32 `json:"playerID"`
+	RetCode int32  `json:"retcode"`
+	Message string `json:"message"`
+	Data    struct {
+		Guest       bool   `json:"guest"`
+		AccountType uint32 `json:"account_type"`
+		AccountUid  uint32 `json:"account_uid"`
+		IpInfo      struct {
+			CountryCode string `json:"country_code"`
+		} `json:"ip_info"`
+	} `json:"data"`
 }
 
-func (c *Controller) gateTokenVerify(context *gin.Context) {
-	verifyFail := func(playerID uint32) {
-		context.JSON(http.StatusOK, &TokenVerifyRsp{
-			Valid:         false,
-			Forbid:        false,
-			ForbidEndTime: 0,
-			PlayerID:      playerID,
-		})
-	}
+func (c *Controller) gateTokenVerify(ctx *gin.Context) {
 	tokenVerifyReq := new(TokenVerifyReq)
-	err := context.ShouldBindJSON(tokenVerifyReq)
+	err := ctx.ShouldBindJSON(tokenVerifyReq)
 	if err != nil {
-		verifyFail(0)
+		c.gateReqErrorRsp(ctx)
 		return
 	}
 	logger.Info("gate token verify, req: %v", tokenVerifyReq)
-	accountId, err := strconv.ParseUint(tokenVerifyReq.AccountId, 10, 64)
+	signStr := fmt.Sprintf("app_id=%d&channel_id=%d&combo_token=%s&open_id=%s", 1, 1, tokenVerifyReq.ComboToken, tokenVerifyReq.OpenID)
+	signHash := hmac.New(sha256.New, []byte(config.GetConfig().Hk4e.LoginSdkAccountKey))
+	signHash.Write([]byte(signStr))
+	signData := signHash.Sum(nil)
+	sign := hex.EncodeToString(signData)
+	if tokenVerifyReq.Sign != sign {
+		c.gateReqErrorRsp(ctx)
+		return
+	}
+	accountId, err := strconv.Atoi(tokenVerifyReq.OpenID)
 	if err != nil {
-		verifyFail(0)
+		c.gateReqErrorRsp(ctx)
 		return
 	}
-	account, err := c.dao.QueryAccountByField("AccountID", accountId)
+	account, err := c.db.QueryAccountByField("account_id", uint64(accountId))
 	if err != nil || account == nil {
-		verifyFail(0)
+		c.gateReqErrorRsp(ctx)
 		return
 	}
-	if tokenVerifyReq.AccountToken != account.ComboToken {
-		verifyFail(account.PlayerID)
+	if tokenVerifyReq.ComboToken != account.ComboToken {
+		c.gateReqErrorRsp(ctx)
 		return
 	}
 	if time.Now().UnixMilli()-int64(account.ComboTokenCreateTime) > time.Hour.Milliseconds()*24 {
-		verifyFail(account.PlayerID)
+		c.gateReqErrorRsp(ctx)
 		return
 	}
-	context.JSON(http.StatusOK, &TokenVerifyRsp{
-		Valid:         true,
-		Forbid:        account.Forbid,
-		ForbidEndTime: account.ForbidEndTime,
-		PlayerID:      account.PlayerID,
+	ctx.JSON(http.StatusOK, &TokenVerifyRsp{
+		RetCode: 0,
+		Message: "OK",
+		Data: struct {
+			Guest       bool   `json:"guest"`
+			AccountType uint32 `json:"account_type"`
+			AccountUid  uint32 `json:"account_uid"`
+			IpInfo      struct {
+				CountryCode string `json:"country_code"`
+			} `json:"ip_info"`
+		}{
+			Guest:       false,
+			AccountType: 1,
+			AccountUid:  uint32(accountId),
+			IpInfo: struct {
+				CountryCode string `json:"country_code"`
+			}{
+				CountryCode: "US",
+			},
+		},
 	})
 }

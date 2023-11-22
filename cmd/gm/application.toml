@@ -1,5 +1,8 @@
 http_port = 9001
 
+[hk4e]
+gm_auth_key = "flswld" # gm认证密钥
+
 [logger]
 level = "DEBUG"
 mode = "CONSOLE"

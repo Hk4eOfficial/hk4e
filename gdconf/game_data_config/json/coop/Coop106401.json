@@ -2777,6 +2777,5 @@
   },
   "useConfidence": true,
   "useTemperament": false,
-  "coopTempValueMap": {},
-  "closeAutoFail": false
+  "coopTempValueMap": {}
 }

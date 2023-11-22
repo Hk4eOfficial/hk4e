@@ -97,9 +97,9 @@ func (d *Dao) SetRedisPlayer(player *model.Player) {
 		costTime, len(playerData), len(playerDataLz4), float64(len(playerDataLz4))/float64(len(playerData)))
 	startTime = time.Now().UnixNano()
 	if d.redisCluster != nil {
-		err = d.redisCluster.Set(context.TODO(), d.GetRedisPlayerKey(player.PlayerID), playerDataLz4, time.Hour*24*30).Err()
+		err = d.redisCluster.Set(context.TODO(), d.GetRedisPlayerKey(player.PlayerId), playerDataLz4, time.Hour*24*30).Err()
 	} else {
-		err = d.redis.Set(context.TODO(), d.GetRedisPlayerKey(player.PlayerID), playerDataLz4, time.Hour*24*30).Err()
+		err = d.redis.Set(context.TODO(), d.GetRedisPlayerKey(player.PlayerId), playerDataLz4, time.Hour*24*30).Err()
 	}
 	if err != nil {
 		logger.Error("set player to redis error: %v", err)
@@ -116,6 +116,24 @@ func (d *Dao) SetRedisPlayerList(playerList []*model.Player) {
 	for _, player := range playerList {
 		d.SetRedisPlayer(player)
 	}
+}
+
+// DeleteRedisPlayer 删除玩家数据
+func (d *Dao) DeleteRedisPlayer(userId uint32) {
+	startTime := time.Now().UnixNano()
+	var err error = nil
+	if d.redisCluster != nil {
+		err = d.redisCluster.Del(context.TODO(), d.GetRedisPlayerKey(userId)).Err()
+	} else {
+		err = d.redis.Del(context.TODO(), d.GetRedisPlayerKey(userId)).Err()
+	}
+	if err != nil {
+		logger.Error("delete player from redis error: %v", err)
+		return
+	}
+	endTime := time.Now().UnixNano()
+	costTime := endTime - startTime
+	logger.Debug("delete player from redis cost time: %v ns", costTime)
 }
 
 // 基于redis的玩家离线数据分布式锁实现

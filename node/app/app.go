@@ -8,6 +8,9 @@ import (
 	"syscall"
 
 	"hk4e/common/config"
+	"hk4e/common/mq"
+	"hk4e/node/api"
+	"hk4e/node/dao"
 	"hk4e/node/service"
 	"hk4e/pkg/logger"
 
@@ -30,7 +33,18 @@ func Run(ctx context.Context, configFile string) error {
 		return err
 	}
 	defer conn.Close()
-	s, err := service.NewService(conn)
+
+	// 只用来监听全服广播
+	messageQueue := mq.NewMessageQueue(api.NODE, "node", nil)
+	defer messageQueue.Close()
+
+	db, err := dao.NewDao()
+	if err != nil {
+		return err
+	}
+	defer db.CloseDao()
+
+	s, err := service.NewService(db, conn, messageQueue)
 	if err != nil {
 		return err
 	}

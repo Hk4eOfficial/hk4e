@@ -244,7 +244,6 @@ function action_EVENT_CHALLENGE_SUCCESS_2019(context, evt)
 	if 2010056 == evt.param1 then
 		ScriptLib.SetGroupVariableValueByGroup(context, "start1", 1, 235850001)
 	end
-	
 	return 0
 end
 

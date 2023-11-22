@@ -4,35 +4,31 @@
 package kcp
 
 import (
+	"encoding/binary"
 	"net"
 	"os"
 	"sync/atomic"
 
-	"github.com/pkg/errors"
 	"golang.org/x/net/ipv4"
-	"golang.org/x/net/ipv6"
 )
 
 // the read loop for a client session
-func (s *UDPSession) readLoop() {
+func (s *UDPSession) rx() {
 	// default version
 	if s.xconn == nil {
-		s.defaultReadLoop()
+		s.defaultRx()
 		return
 	}
-
 	// x/net version
 	var src string
 	msgs := make([]ipv4.Message, batchSize)
 	for k := range msgs {
 		msgs[k].Buffers = [][]byte{make([]byte, mtuLimit)}
 	}
-
 	for {
 		if count, err := s.xconn.ReadBatch(msgs, 0); err == nil {
 			for i := 0; i < count; i++ {
 				msg := &msgs[i]
-
 				// make sure the packet is from the same source
 				if src == "" { // set source address if nil
 					src = msg.Addr.String()
@@ -40,23 +36,27 @@ func (s *UDPSession) readLoop() {
 					s.remote = msg.Addr
 					src = msg.Addr.String()
 				}
-
 				udpPayload := msg.Buffers[0][:msg.N]
-
 				if msg.N == 20 {
-					connType, _, conv, err := ParseEnet(udpPayload)
+					connType, enetType, sessionId, conv, _, err := ParseEnet(udpPayload)
 					if err != nil {
 						continue
 					}
-					if conv != s.GetConv() {
+					if sessionId != s.GetSessionId() || conv != s.GetConv() {
 						continue
 					}
 					if connType == ConnEnetFin {
-						s.Close()
+						s.SendEnetNotifyToPeer(&Enet{
+							Addr:      s.remote.String(),
+							SessionId: sessionId,
+							Conv:      conv,
+							ConnType:  ConnEnetFin,
+							EnetType:  enetType,
+						})
+						_ = s.Close()
 						continue
 					}
 				}
-
 				// source and size has validated
 				s.packetInput(udpPayload)
 			}
@@ -67,109 +67,75 @@ func (s *UDPSession) readLoop() {
 			if operr, ok := err.(*net.OpError); ok {
 				if se, ok := operr.Err.(*os.SyscallError); ok {
 					if se.Syscall == "recvmmsg" {
-						s.defaultReadLoop()
+						s.defaultRx()
 						return
 					}
 				}
 			}
-			s.notifyReadError(errors.WithStack(err))
+			s.notifyReadError(err)
 			return
 		}
 	}
 }
 
 // monitor incoming data for all connections of server
-func (l *Listener) monitor() {
-	var xconn batchConn
-	if _, ok := l.conn.(*net.UDPConn); ok {
-		addr, err := net.ResolveUDPAddr("udp", l.conn.LocalAddr().String())
-		if err == nil {
-			if addr.IP.To4() != nil {
-				xconn = ipv4.NewPacketConn(l.conn)
-			} else {
-				xconn = ipv6.NewPacketConn(l.conn)
-			}
-		}
-	}
-
+func (l *Listener) rx() {
 	// default version
-	if xconn == nil {
-		l.defaultMonitor()
+	if l.xconn == nil {
+		l.defaultRx()
 		return
 	}
-
 	// x/net version
 	msgs := make([]ipv4.Message, batchSize)
 	for k := range msgs {
 		msgs[k].Buffers = [][]byte{make([]byte, mtuLimit)}
 	}
-
 	for {
-		if count, err := xconn.ReadBatch(msgs, 0); err == nil {
+		if count, err := l.xconn.ReadBatch(msgs, 0); err == nil {
 			for i := 0; i < count; i++ {
 				msg := &msgs[i]
 				udpPayload := msg.Buffers[0][:msg.N]
-				var convId uint64 = 0
+				var sessionId uint32 = 0
+				var conv uint32 = 0
+				var rawConv uint64 = 0
 				if msg.N == 20 {
-					connType, enetType, conv, err := ParseEnet(udpPayload)
+					// 连接控制协议
+					var connType = ""
+					var enetType uint32 = 0
+					connType, enetType, sessionId, conv, rawConv, err = ParseEnet(udpPayload)
 					if err != nil {
 						continue
 					}
-					convId = conv
 					switch connType {
 					case ConnEnetSyn:
 						// 客户端前置握手获取conv
-						l.EnetNotify <- &Enet{
-							Addr:     msg.Addr.String(),
-							ConvId:   convId,
-							ConnType: ConnEnetSyn,
-							EnetType: enetType,
-						}
+						l.enetNotifyChan <- &Enet{Addr: msg.Addr.String(), SessionId: sessionId, Conv: conv, ConnType: ConnEnetSyn, EnetType: enetType}
 					case ConnEnetEst:
 						// 连接建立
-						l.EnetNotify <- &Enet{
-							Addr:     msg.Addr.String(),
-							ConvId:   convId,
-							ConnType: ConnEnetEst,
-							EnetType: enetType,
-						}
+						l.enetNotifyChan <- &Enet{Addr: msg.Addr.String(), SessionId: sessionId, Conv: conv, ConnType: ConnEnetEst, EnetType: enetType}
 					case ConnEnetFin:
 						// 连接断开
-						l.EnetNotify <- &Enet{
-							Addr:     msg.Addr.String(),
-							ConvId:   convId,
-							ConnType: ConnEnetFin,
-							EnetType: enetType,
-						}
+						l.enetNotifyChan <- &Enet{Addr: msg.Addr.String(), SessionId: sessionId, Conv: conv, ConnType: ConnEnetFin, EnetType: enetType}
 					default:
 						continue
 					}
 				} else {
 					// 正常KCP包
-					convId += uint64(udpPayload[0]) << 0
-					convId += uint64(udpPayload[1]) << 8
-					convId += uint64(udpPayload[2]) << 16
-					convId += uint64(udpPayload[3]) << 24
-					convId += uint64(udpPayload[4]) << 32
-					convId += uint64(udpPayload[5]) << 40
-					convId += uint64(udpPayload[6]) << 48
-					convId += uint64(udpPayload[7]) << 56
+					sessionId = binary.LittleEndian.Uint32(udpPayload[0:4])
+					conv = binary.LittleEndian.Uint32(udpPayload[4:8])
+					rawConv = binary.LittleEndian.Uint64(udpPayload[0:8])
 				}
 				l.sessionLock.RLock()
-				conn, exist := l.sessions[convId]
+				conn, exist := l.sessions[rawConv]
 				l.sessionLock.RUnlock()
 				if exist {
 					if conn.remote.String() != msg.Addr.String() {
 						conn.remote = msg.Addr
 						// 连接地址改变
-						l.EnetNotify <- &Enet{
-							Addr:     conn.remote.String(),
-							ConvId:   convId,
-							ConnType: ConnEnetAddrChange,
-						}
+						l.enetNotifyChan <- &Enet{Addr: conn.remote.String(), SessionId: sessionId, Conv: conv, ConnType: ConnEnetAddrChange}
 					}
 				}
-				l.packetInput(udpPayload, msg.Addr, convId)
+				l.packetInput(udpPayload, msg.Addr, rawConv)
 			}
 		} else {
 			// compatibility issue:
@@ -178,12 +144,12 @@ func (l *Listener) monitor() {
 			if operr, ok := err.(*net.OpError); ok {
 				if se, ok := operr.Err.(*os.SyscallError); ok {
 					if se.Syscall == "recvmmsg" {
-						l.defaultMonitor()
+						l.defaultRx()
 						return
 					}
 				}
 			}
-			l.notifyReadError(errors.WithStack(err))
+			l.notifyReadError(err)
 			return
 		}
 	}
@@ -195,7 +161,6 @@ func (s *UDPSession) tx(txqueue []ipv4.Message) {
 		s.defaultTx(txqueue)
 		return
 	}
-
 	// x/net version
 	nbytes := 0
 	npkts := 0
@@ -219,60 +184,63 @@ func (s *UDPSession) tx(txqueue []ipv4.Message) {
 					}
 				}
 			}
-			s.notifyWriteError(errors.WithStack(err))
+			s.notifyWriteError(err)
 			break
 		}
 	}
-
 	atomic.AddUint64(&DefaultSnmp.OutPkts, uint64(npkts))
 	atomic.AddUint64(&DefaultSnmp.OutBytes, uint64(nbytes))
 }
 
 func (l *Listener) SendEnetNotifyToPeer(enet *Enet) {
-	var xconn batchConn
-	_, ok := l.conn.(*net.UDPConn)
-	if !ok {
-		return
-	}
-	localAddr, err := net.ResolveUDPAddr("udp", l.conn.LocalAddr().String())
-	if err != nil {
-		return
-	}
-	if localAddr.IP.To4() != nil {
-		xconn = ipv4.NewPacketConn(l.conn)
-	} else {
-		xconn = ipv6.NewPacketConn(l.conn)
-	}
-
 	// default version
-	if xconn == nil {
+	if l.xconn == nil || l.xconnWriteError != nil {
 		l.defaultSendEnetNotifyToPeer(enet)
 		return
 	}
-
+	data := BuildEnet(enet.ConnType, enet.EnetType, enet.SessionId, enet.Conv)
+	if data == nil {
+		return
+	}
 	remoteAddr, err := net.ResolveUDPAddr("udp", enet.Addr)
 	if err != nil {
 		return
 	}
-
-	data := BuildEnet(enet.ConnType, enet.EnetType, enet.ConvId)
-	if data == nil {
-		return
+	_, err = l.xconn.WriteBatch([]ipv4.Message{{Buffers: [][]byte{data}, Addr: remoteAddr}}, 0)
+	if err != nil {
+		// compatibility issue:
+		// for linux kernel<=2.6.32, support for sendmmsg is not available
+		// an error of type os.SyscallError will be returned
+		if operr, ok := err.(*net.OpError); ok {
+			if se, ok := operr.Err.(*os.SyscallError); ok {
+				if se.Syscall == "sendmmsg" {
+					l.xconnWriteError = se
+					l.defaultSendEnetNotifyToPeer(enet)
+					return
+				}
+			}
+		}
 	}
-
-	_, _ = xconn.WriteBatch([]ipv4.Message{{
-		Buffers: [][]byte{data},
-		Addr:    remoteAddr,
-	}}, 0)
 }
 
 func (s *UDPSession) SendEnetNotifyToPeer(enet *Enet) {
-	data := BuildEnet(enet.ConnType, enet.EnetType, s.GetConv())
+	data := BuildEnet(enet.ConnType, enet.EnetType, s.GetSessionId(), s.GetConv())
 	if data == nil {
 		return
 	}
-	s.tx([]ipv4.Message{{
-		Buffers: [][]byte{data},
-		Addr:    s.remote,
-	}})
+	_, err := s.xconn.WriteBatch([]ipv4.Message{{Buffers: [][]byte{data}, Addr: s.remote}}, 0)
+	if err != nil {
+		// compatibility issue:
+		// for linux kernel<=2.6.32, support for sendmmsg is not available
+		// an error of type os.SyscallError will be returned
+		if operr, ok := err.(*net.OpError); ok {
+			if se, ok := operr.Err.(*os.SyscallError); ok {
+				if se.Syscall == "sendmmsg" {
+					s.xconnWriteError = se
+					s.defaultSendEnetNotifyToPeer(enet)
+					return
+				}
+			}
+		}
+	}
 }

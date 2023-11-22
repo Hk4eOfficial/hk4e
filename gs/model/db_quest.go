@@ -24,9 +24,10 @@ type Quest struct {
 
 func (p *Player) GetDbQuest() *DbQuest {
 	if p.DbQuest == nil {
-		p.DbQuest = &DbQuest{
-			QuestMap: make(map[uint32]*Quest),
-		}
+		p.DbQuest = new(DbQuest)
+	}
+	if p.DbQuest.QuestMap == nil {
+		p.DbQuest.QuestMap = make(map[uint32]*Quest)
 	}
 	return p.DbQuest
 }
@@ -62,8 +63,8 @@ func (q *DbQuest) AddQuest(questId uint32) {
 	}
 }
 
-// ExecQuest 开始执行一个任务
-func (q *DbQuest) ExecQuest(questId uint32) {
+// StartQuest 开始执行一个任务
+func (q *DbQuest) StartQuest(questId uint32) {
 	quest, exist := q.QuestMap[questId]
 	if !exist {
 		logger.Error("get quest is nil, questId: %v", questId)
@@ -101,7 +102,6 @@ func (q *DbQuest) AddQuestProgress(questId uint32, index int, progress uint32) {
 		return
 	}
 	if quest.State != constant.QUEST_STATE_UNFINISHED {
-		logger.Error("invalid quest state, questId: %v, state: %v", questId, quest.State)
 		return
 	}
 	questDataConfig := gdconf.GetQuestDataById(int32(questId))
@@ -129,4 +129,16 @@ func (q *DbQuest) ForceFinishQuest(questId uint32) {
 	for index, finishCond := range questDataConfig.FinishCondList {
 		q.AddQuestProgress(questId, index, uint32(finishCond.Count))
 	}
+}
+
+func (q *DbQuest) FailQuest(questId uint32) {
+	quest, exist := q.QuestMap[questId]
+	if !exist {
+		logger.Error("get quest is nil, questId: %v", questId)
+		return
+	}
+	if quest.State != constant.QUEST_STATE_UNFINISHED {
+		return
+	}
+	quest.State = constant.QUEST_STATE_FAILED
 }

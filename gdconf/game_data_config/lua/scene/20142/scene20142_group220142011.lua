@@ -103,7 +103,6 @@ function action_EVENT_LEVEL_TAG_CHANGE_11002(context, evt)
 	else
 		ScriptLib.RemoveExtraGroupSuite(context, 220142011, 3)
 	end
-	
 	return 0
 end
 
@@ -114,7 +113,6 @@ function action_EVENT_GROUP_LOAD_11003(context, evt)
 	else
 		ScriptLib.RemoveExtraGroupSuite(context, 220142011, 3)
 	end
-	
 	return 0
 end
 

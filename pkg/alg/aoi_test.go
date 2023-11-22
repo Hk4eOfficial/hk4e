@@ -12,7 +12,7 @@ func TestAoiManagerGetSurrGridListByGid(t *testing.T) {
 		-150, 150,
 		-150, 150,
 	)
-	aoiManager.Init3DRectAoiManager(3, 3, 3)
+	aoiManager.Init3DRectAoiManager(3, 3, 3, true)
 	for k := range aoiManager.gridMap {
 		// 得到当前格子周边的九宫格
 		gridList := aoiManager.GetSurrGridListByGid(k)

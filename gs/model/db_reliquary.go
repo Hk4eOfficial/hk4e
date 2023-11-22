@@ -1,20 +1,20 @@
 package model
 
 import (
-	"hk4e/common/constant"
 	"hk4e/gdconf"
 	"hk4e/pkg/logger"
 )
 
 type DbReliquary struct {
-	ReliquaryMap map[uint64]*Reliquary // 圣遗物背包
+	ReliquaryMap map[uint64]*Reliquary // 圣遗物集合
 }
 
 func (p *Player) GetDbReliquary() *DbReliquary {
 	if p.DbReliquary == nil {
-		p.DbReliquary = &DbReliquary{
-			ReliquaryMap: make(map[uint64]*Reliquary),
-		}
+		p.DbReliquary = new(DbReliquary)
+	}
+	if p.DbReliquary.ReliquaryMap == nil {
+		p.DbReliquary.ReliquaryMap = make(map[uint64]*Reliquary)
 	}
 	return p.DbReliquary
 }
@@ -32,7 +32,19 @@ type Reliquary struct {
 	Guid             uint64   `bson:"-" msgpack:"-"`
 }
 
-func (r *DbReliquary) InitAllReliquary(player *Player) {
+func (r *DbReliquary) GetReliquaryById(reliquaryId uint64) *Reliquary {
+	return r.ReliquaryMap[reliquaryId]
+}
+
+func (r *DbReliquary) GetReliquaryMap() map[uint64]*Reliquary {
+	return r.ReliquaryMap
+}
+
+func (r *DbReliquary) GetReliquaryMapLen() int {
+	return len(r.ReliquaryMap)
+}
+
+func (r *DbReliquary) InitDbReliquary(player *Player) {
 	for _, reliquary := range r.ReliquaryMap {
 		r.InitReliquary(player, reliquary)
 	}
@@ -50,7 +62,7 @@ func (r *DbReliquary) InitReliquary(player *Player, reliquary *Reliquary) {
 	r.ReliquaryMap[reliquary.ReliquaryId] = reliquary
 	if reliquary.AvatarId != 0 {
 		dbAvatar := player.GetDbAvatar()
-		avatar := dbAvatar.AvatarMap[reliquary.AvatarId]
+		avatar := dbAvatar.GetAvatarById(reliquary.AvatarId)
 		avatar.EquipGuidMap[reliquary.Guid] = reliquary.Guid
 		avatar.EquipReliquaryMap[uint8(reliquaryConfig.ReliquaryType)] = reliquary
 	}
@@ -69,10 +81,6 @@ func (r *DbReliquary) GetReliquary(reliquaryId uint64) *Reliquary {
 }
 
 func (r *DbReliquary) AddReliquary(player *Player, itemId uint32, reliquaryId uint64, mainPropId uint32) {
-	// 校验背包圣遗物容量
-	if len(r.ReliquaryMap) > constant.STORE_PACK_LIMIT_RELIQUARY {
-		return
-	}
 	itemDataConfig := gdconf.GetItemDataById(int32(itemId))
 	if itemDataConfig == nil {
 		logger.Error("reliquary config is nil, itemId: %v", itemId)
@@ -91,7 +99,6 @@ func (r *DbReliquary) AddReliquary(player *Player, itemId uint32, reliquaryId ui
 		Guid:             0,
 	}
 	r.InitReliquary(player, reliquary)
-	r.ReliquaryMap[reliquaryId] = reliquary
 }
 
 func (r *DbReliquary) CostReliquary(player *Player, reliquaryId uint64) uint64 {

@@ -11,8 +11,10 @@ import (
 	pb "google.golang.org/protobuf/proto"
 )
 
+/************************************************** 接口请求 **************************************************/
+
 // SetEquipLockStateReq 设置装备上锁状态请求
-func (g *GameManager) SetEquipLockStateReq(player *model.Player, payloadMsg pb.Message) {
+func (g *Game) SetEquipLockStateReq(player *model.Player, payloadMsg pb.Message) {
 	req := payloadMsg.(*proto.SetEquipLockStateReq)
 
 	// 获取目标装备
@@ -27,12 +29,12 @@ func (g *GameManager) SetEquipLockStateReq(player *model.Player, payloadMsg pb.M
 		weapon := equipGameObj.(*model.Weapon)
 		weapon.Lock = req.IsLocked
 		// 更新武器的物品数据
-		g.SendMsg(cmd.StoreItemChangeNotify, player.PlayerID, player.ClientSeq, g.PacketStoreItemChangeNotifyByWeapon(weapon))
+		g.SendMsg(cmd.StoreItemChangeNotify, player.PlayerId, player.ClientSeq, g.PacketStoreItemChangeNotifyByWeapon(weapon))
 	case *model.Reliquary:
 		reliquary := equipGameObj.(*model.Reliquary)
 		reliquary.Lock = req.IsLocked
 		// 更新圣遗物的物品数据
-		g.SendMsg(cmd.StoreItemChangeNotify, player.PlayerID, player.ClientSeq, g.PacketStoreItemChangeNotifyByReliquary(reliquary))
+		g.SendMsg(cmd.StoreItemChangeNotify, player.PlayerId, player.ClientSeq, g.PacketStoreItemChangeNotifyByReliquary(reliquary))
 	default:
 		logger.Error("equip type error, equipGuid: %v", req.TargetEquipGuid)
 		g.SendError(cmd.SetEquipLockStateRsp, player, &proto.SetEquipLockStateRsp{})
@@ -43,11 +45,11 @@ func (g *GameManager) SetEquipLockStateReq(player *model.Player, payloadMsg pb.M
 		TargetEquipGuid: req.TargetEquipGuid,
 		IsLocked:        req.IsLocked,
 	}
-	g.SendMsg(cmd.SetEquipLockStateRsp, player.PlayerID, player.ClientSeq, setEquipLockStateRsp)
+	g.SendMsg(cmd.SetEquipLockStateRsp, player.PlayerId, player.ClientSeq, setEquipLockStateRsp)
 }
 
 // TakeoffEquipReq 装备卸下请求
-func (g *GameManager) TakeoffEquipReq(player *model.Player, payloadMsg pb.Message) {
+func (g *Game) TakeoffEquipReq(player *model.Player, payloadMsg pb.Message) {
 	req := payloadMsg.(*proto.TakeoffEquipReq)
 
 	// 获取目标角色
@@ -68,20 +70,20 @@ func (g *GameManager) TakeoffEquipReq(player *model.Player, payloadMsg pb.Messag
 	dbAvatar := player.GetDbAvatar()
 	dbAvatar.TakeOffReliquary(avatar.AvatarId, reliquary)
 	// 角色更新面板
-	g.UpdateUserAvatarFightProp(player.PlayerID, avatar.AvatarId)
+	g.UpdatePlayerAvatarFightProp(player.PlayerId, avatar.AvatarId)
 	// 更新玩家装备
 	avatarEquipChangeNotify := g.PacketAvatarEquipChangeNotifyByReliquary(avatar, uint8(req.Slot))
-	g.SendMsg(cmd.AvatarEquipChangeNotify, player.PlayerID, player.ClientSeq, avatarEquipChangeNotify)
+	g.SendMsg(cmd.AvatarEquipChangeNotify, player.PlayerId, player.ClientSeq, avatarEquipChangeNotify)
 
 	takeoffEquipRsp := &proto.TakeoffEquipRsp{
 		AvatarGuid: req.AvatarGuid,
 		Slot:       req.Slot,
 	}
-	g.SendMsg(cmd.TakeoffEquipRsp, player.PlayerID, player.ClientSeq, takeoffEquipRsp)
+	g.SendMsg(cmd.TakeoffEquipRsp, player.PlayerId, player.ClientSeq, takeoffEquipRsp)
 }
 
 // WearEquipReq 穿戴装备请求
-func (g *GameManager) WearEquipReq(player *model.Player, payloadMsg pb.Message) {
+func (g *Game) WearEquipReq(player *model.Player, payloadMsg pb.Message) {
 	req := payloadMsg.(*proto.WearEquipReq)
 
 	// 获取目标角色
@@ -119,42 +121,44 @@ func (g *GameManager) WearEquipReq(player *model.Player, payloadMsg pb.Message) 
 			g.SendError(cmd.WearEquipRsp, player, &proto.WearEquipRsp{})
 			return
 		}
-		g.WearUserAvatarWeapon(player.PlayerID, avatar.AvatarId, weapon.WeaponId)
+		g.WearPlayerAvatarWeapon(player.PlayerId, avatar.AvatarId, weapon.WeaponId)
 	case *model.Reliquary:
 		reliquary := equipGameObj.(*model.Reliquary)
-		g.WearUserAvatarReliquary(player.PlayerID, avatar.AvatarId, reliquary.ReliquaryId)
+		g.WearPlayerAvatarReliquary(player.PlayerId, avatar.AvatarId, reliquary.ReliquaryId)
 	default:
 		logger.Error("equip type error, equipGuid: %v", req.EquipGuid)
 		g.SendError(cmd.WearEquipRsp, player, &proto.WearEquipRsp{})
 		return
 	}
 	// 角色更新面板
-	g.UpdateUserAvatarFightProp(player.PlayerID, avatar.AvatarId)
+	g.UpdatePlayerAvatarFightProp(player.PlayerId, avatar.AvatarId)
 
 	wearEquipRsp := &proto.WearEquipRsp{
 		AvatarGuid: req.AvatarGuid,
 		EquipGuid:  req.EquipGuid,
 	}
-	g.SendMsg(cmd.WearEquipRsp, player.PlayerID, player.ClientSeq, wearEquipRsp)
+	g.SendMsg(cmd.WearEquipRsp, player.PlayerId, player.ClientSeq, wearEquipRsp)
 }
 
-// WearUserAvatarReliquary 玩家角色装备圣遗物
-func (g *GameManager) WearUserAvatarReliquary(userId uint32, avatarId uint32, reliquaryId uint64) {
+/************************************************** 游戏功能 **************************************************/
+
+// WearPlayerAvatarReliquary 玩家角色装备圣遗物
+func (g *Game) WearPlayerAvatarReliquary(userId uint32, avatarId uint32, reliquaryId uint64) {
 	player := USER_MANAGER.GetOnlineUser(userId)
 	if player == nil {
 		logger.Error("player is nil, uid: %v", userId)
 		return
 	}
 	dbAvatar := player.GetDbAvatar()
-	avatar, ok := dbAvatar.AvatarMap[avatarId]
-	if !ok {
-		logger.Error("avatar error, avatarId: %v", avatarId)
+	avatar := dbAvatar.GetAvatarById(avatarId)
+	if avatar == nil {
+		logger.Error("get avatar is nil, avatarId: %v", avatarId)
 		return
 	}
 	dbReliquary := player.GetDbReliquary()
-	reliquary, ok := dbReliquary.ReliquaryMap[reliquaryId]
-	if !ok {
-		logger.Error("reliquary error, reliquaryId: %v", reliquaryId)
+	reliquary := dbReliquary.GetReliquaryById(reliquaryId)
+	if reliquary == nil {
+		logger.Error("get reliquary is nil, reliquaryId: %v", reliquaryId)
 		return
 	}
 	// 获取圣遗物配置表
@@ -167,9 +171,9 @@ func (g *GameManager) WearUserAvatarReliquary(userId uint32, avatarId uint32, re
 	avatarCurReliquary := avatar.EquipReliquaryMap[uint8(reliquaryConfig.ReliquaryType)]
 	if reliquary.AvatarId != 0 {
 		// 圣遗物在别的角色身上
-		targetReliquaryAvatar, ok := dbAvatar.AvatarMap[reliquary.AvatarId]
-		if !ok {
-			logger.Error("avatar error, avatarId: %v", reliquary.AvatarId)
+		targetReliquaryAvatar := dbAvatar.GetAvatarById(reliquary.AvatarId)
+		if targetReliquaryAvatar == nil {
+			logger.Error("get avatar is nil, avatarId: %v", reliquary.AvatarId)
 			return
 		}
 		// 确保目前角色已装备圣遗物
@@ -197,28 +201,28 @@ func (g *GameManager) WearUserAvatarReliquary(userId uint32, avatarId uint32, re
 	g.SendMsg(cmd.AvatarEquipChangeNotify, userId, player.ClientSeq, avatarEquipChangeNotify)
 }
 
-// WearUserAvatarWeapon 玩家角色装备武器
-func (g *GameManager) WearUserAvatarWeapon(userId uint32, avatarId uint32, weaponId uint64) {
+// WearPlayerAvatarWeapon 玩家角色装备武器
+func (g *Game) WearPlayerAvatarWeapon(userId uint32, avatarId uint32, weaponId uint64) {
 	player := USER_MANAGER.GetOnlineUser(userId)
 	if player == nil {
 		logger.Error("player is nil, uid: %v", userId)
 		return
 	}
 	dbAvatar := player.GetDbAvatar()
-	avatar, ok := dbAvatar.AvatarMap[avatarId]
-	if !ok {
-		logger.Error("avatar error, avatarId: %v", avatarId)
+	avatar := dbAvatar.GetAvatarById(avatarId)
+	if avatar == nil {
+		logger.Error("get avatar is nil, avatarId: %v", avatarId)
 		return
 	}
 	dbWeapon := player.GetDbWeapon()
-	weapon, ok := dbWeapon.WeaponMap[weaponId]
-	if !ok {
-		logger.Error("weapon error, weaponId: %v", weaponId)
+	weapon := dbWeapon.GetWeaponById(weaponId)
+	if weapon == nil {
+		logger.Error("get weapon is nil, weaponId: %v", weaponId)
 		return
 	}
-	world := WORLD_MANAGER.GetWorldByID(player.WorldId)
+	world := WORLD_MANAGER.GetWorldById(player.WorldId)
 	if world == nil {
-		logger.Error("world is nil, worldId: %v", player.WorldId)
+		logger.Error("get world is nil, worldId: %v, uid: %v", player.WorldId, player.PlayerId)
 		return
 	}
 	// 角色已装备的武器
@@ -227,9 +231,9 @@ func (g *GameManager) WearUserAvatarWeapon(userId uint32, avatarId uint32, weapo
 	if avatarCurWeapon != nil {
 		if weapon.AvatarId != 0 {
 			// 武器在别的角色身上
-			targetWeaponAvatar, ok := dbAvatar.AvatarMap[weapon.AvatarId]
-			if !ok {
-				logger.Error("avatar error, avatarId: %v", weapon.AvatarId)
+			targetWeaponAvatar := dbAvatar.GetAvatarById(weapon.AvatarId)
+			if targetWeaponAvatar == nil {
+				logger.Error("get avatar is nil, avatarId: %v", weapon.AvatarId)
 				return
 			}
 			// 卸下角色已装备的武器
@@ -266,7 +270,9 @@ func (g *GameManager) WearUserAvatarWeapon(userId uint32, avatarId uint32, weapo
 	g.SendMsg(cmd.AvatarEquipChangeNotify, userId, player.ClientSeq, avatarEquipChangeNotify)
 }
 
-func (g *GameManager) PacketAvatarEquipChangeNotifyByReliquary(avatar *model.Avatar, slot uint8) *proto.AvatarEquipChangeNotify {
+/************************************************** 打包封装 **************************************************/
+
+func (g *Game) PacketAvatarEquipChangeNotifyByReliquary(avatar *model.Avatar, slot uint8) *proto.AvatarEquipChangeNotify {
 	// 获取角色对应位置的圣遗物
 	reliquary, ok := avatar.EquipReliquaryMap[slot]
 	if !ok {
@@ -297,7 +303,7 @@ func (g *GameManager) PacketAvatarEquipChangeNotifyByReliquary(avatar *model.Ava
 	return avatarEquipChangeNotify
 }
 
-func (g *GameManager) PacketAvatarEquipChangeNotifyByWeapon(avatar *model.Avatar, weapon *model.Weapon, entityId uint32) *proto.AvatarEquipChangeNotify {
+func (g *Game) PacketAvatarEquipChangeNotifyByWeapon(avatar *model.Avatar, weapon *model.Weapon, entityId uint32) *proto.AvatarEquipChangeNotify {
 	weaponConfig := gdconf.GetItemDataById(int32(weapon.ItemId))
 	if weaponConfig == nil {
 		logger.Error("weapon config error, itemId: %v", weapon.ItemId)
